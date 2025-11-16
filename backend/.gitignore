@@ -1,0 +1,27 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+build/
+dist/
+target/
+
+# Node.js dependencies
+node_modules/
+
+# Python virtual environments
+venv/
+.venv/
+
+# Log files
+*.log
+
+# Temporary files
+*.tmp
+temp/
+.env
+# Editor/IDE specific files
+.vscode/
+.idea/
+*.swp
