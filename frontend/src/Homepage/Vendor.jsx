@@ -141,7 +141,7 @@ return (
           </button>
           {/* Wishlist */}
           {/* Favorite Sellers */}
-          <button  onClick={()=>{navigate("/Product")}}  className="bg-gray-100 text-gray-800 font-semibold py-4 rounded-lg shadow flex flex-col items-center gap-1 hover:bg-gray-200">
+          <button  onClick={()=>{navigate("/product/1")}}  className="bg-gray-100 text-gray-800 font-semibold py-4 rounded-lg shadow flex flex-col items-center gap-1 hover:bg-gray-200">
             <svg className="w-6 h-6 mb-1" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path d="M12 17.75L7.12 20.52L8.27 15.02L4.55 11.24L10.04 10.62L12 5.5L13.96 10.62L19.45 11.24L15.73 15.02L16.88 20.52L12 17.75Z" />
             </svg>

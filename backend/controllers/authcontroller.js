@@ -97,7 +97,6 @@ const loginUser = async (req, res) => {
 // ✅ GET PROFILE
 const getProfile = async (req, res) => {
   try {
-    console.log(req.user);
     const user = await User.findById(req.user).select("-password");
     if (!user)
       return res.status(404).json({ error: "User not found" });

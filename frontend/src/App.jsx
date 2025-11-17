@@ -5,9 +5,9 @@ import Farmer from "./Homepage/Farmer";
 import { useAuthStore } from "./lib/store";
 import { Toaster } from "react-hot-toast";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import Loginpage from "./pages/Login"; 
-import Signuppage from "./pages/Signup"; 
-import ChatHome from "./pages/chat/Homepage"
+import Loginpage from "./pages/Login";
+import Signuppage from "./pages/Signup";
+import ChatHome from "./pages/chat/Homepage";
 import Profilepage from "./pages/Setting";
 import AddProduct from "./pages/Addproduct";
 import Inventory from "./pages/Inventory";
@@ -20,6 +20,9 @@ import ActiveDelivery from "./pages/TransportActiveJob";
 import BrowseProduct from "./pages/BrowseProduct";
 import MyOrders from "./pages/VendorOrders";
 import Demo from "./pages/Demo";
+import Product from "./pages/Product";
+import { Loader } from "lucide-react";
+import Buyandpayment from "./pages/Buyandpayment";
 const App = () => {
   const location = useLocation();
   const { checkAuth, AuthUser, Authtype, isCheckingAuth } = useAuthStore();
@@ -31,8 +34,8 @@ const App = () => {
   if (isCheckingAuth && !AuthUser) {
     return (
       <div>
-        <div className='flex h-screen items-center justify-center'>
-          <Loader className='size-8 text-gray-50 animate-spin' />
+        <div className="flex h-screen items-center justify-center">
+          <Loader className="size-8 text-gray-50 animate-spin" />
         </div>
       </div>
     );
@@ -121,13 +124,16 @@ const App = () => {
           element={AuthUser ? <MyOrders /> : <Navigate to="/" />}
         />
         <Route
-          path="/demo"
-          element={AuthUser ? <Demo /> : <Navigate to="/" />}
+          path="/product/:product_id"
+          element={AuthUser ? <Product /> : <Navigate to="/" />}
         />
-
+        <Route
+          path="/buy"
+          element={AuthUser ? <Buyandpayment /> : <Navigate to="/" />}
+        />
       </Routes>
     </>
   );
 };
 
-export default App;
+export default App;

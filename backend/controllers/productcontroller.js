@@ -1,7 +1,7 @@
 const Product = require("../models/product.js");
-const cloud = require( "../middlewares/cloud.js")
+const cloud = require("../middlewares/cloud.js")
 // ✅ Add a new product
- const addProduct = async (req, res) => {
+const addProduct = async (req, res) => {
   try {
     console.log(req.body);
     const { Product_name, Product_price, Product_status, Product_image, Product_description } = req.body;
@@ -13,7 +13,7 @@ const cloud = require( "../middlewares/cloud.js")
       Product_name,
       Product_price,
       Product_status,
-      Product_image : uploadedPost,
+      Product_image: uploadedPost,
       Product_description
     });
 
@@ -27,7 +27,7 @@ const cloud = require( "../middlewares/cloud.js")
 };
 
 // ✅ Edit product
- const editProduct = async (req, res) => {
+const editProduct = async (req, res) => {
   try {
     const { Product_id, Product_name, Product_price, Product_status, Product_image, Product_description } = req.body;
 
@@ -47,7 +47,7 @@ const cloud = require( "../middlewares/cloud.js")
 };
 
 // ✅ Delete product
- const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
     const { Product_id } = req.body;
 
@@ -61,7 +61,7 @@ const cloud = require( "../middlewares/cloud.js")
 };
 
 // ✅ Get ALL products
- const getAllProducts = async (req, res) => {
+const getAllProducts = async (req, res) => {
   try {
     const allItems = await Product.find({});
     return res.status(200).json({ products: allItems });
@@ -72,17 +72,27 @@ const cloud = require( "../middlewares/cloud.js")
 };
 
 // ✅ Get products of logged-in user
- const getMyProducts = async (req, res) => {
+const getMyProducts = async (req, res) => {
   try {
     const data = await Product.find({ userId: req.user });
-
     return res.status(200).json({ products: data });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
+const getproduct = async (req,res) => {
+  try {
+    const id = req.params.id;
+    const data = await Product.findById(id);
+    // console.log(data);
+    return res.status(200).json({ products: data });
+    // return res.status(200).json({ products: "ok" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
+  }
+}
 
 module.exports = {
   addProduct,
@@ -90,4 +100,5 @@ module.exports = {
   deleteProduct,
   getAllProducts,
   getMyProducts,
+  getproduct,
 }

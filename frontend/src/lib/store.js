@@ -3,22 +3,14 @@ import { api } from "./axios";
 import toast from "react-hot-toast";
 
 export const useAuthStore = create((set) => ({
-  isCheckingAuth: null,
-  xyz:32,
-  // AuthUser: {
-  //   id: "user._id",
-  //   name: "Jitendra",
-  //   email: "jitendra@gmail.com",
-  //   role: "vendor",
-  // },
-  // Authtype: "transporter",
-  AuthUser:null,
-  Authtype:null,
+  isCheckingAuth: true,
+  xyz: 32,
+  AuthUser: null,
+  Authtype: null,
   userdata: 1,
   isSignup: false,
-  isLoginIn: false, 
-  currentChatuser: {username:"Jitendra",_id:"sgdhhs"},
-  // chatpeople: []
+  isLoginIn: false,
+  currentChatuser: { username: "Jitendra", _id: "sgdhhs" },
   Chats: [
     { sender: '6910474e3e2255e439068de5', text: 'ok', image: null, _id: '6910b0dd7621918180284c80', createdAt: '2025-11-09T15:18:53.592Z' },
     { sender: '6910474e3e2255e439068de5', text: 'nice ', image: null, _id: '6910b0f27621918180284cab', createdAt: '2025-11-09T15:19:14.968Z' },
@@ -27,18 +19,21 @@ export const useAuthStore = create((set) => ({
   messageUser: [{ _id: '690f7debafeddef52a13f95c', username: 'jitendra', email: 'pagalu@gmail.com', password: '$2b$10$ktEFiJPx4iNPAnSpDaxqAuUKMRlkre7bS1GjOOhqcuRglBSOJolu.', profile_pic: '' },
   { _id: '690f7debafeddef52a13f95c', username: 'jitendra', email: 'pagalu@gmail.com', password: '$2b$10$ktEFiJPx4iNPAnSpDaxqAuUKMRlkre7bS1GjOOhqcuRglBSOJolu.', profile_pic: '' },
   ],
+  product_data: null,
   currentChatuser: null,
   Chats: [],
-  userproduct:[],
-  Allproduct:[],
+  userproduct: [],
+  Allproduct: [],
+  Tracking_id:null,
   checkAuth: async () => {
     try {
       const res = await api.get("/api/auth/me");
-      set({Authtype:res.data.user.role})
+      set({ Authtype: res.data.user.role })
       set({ AuthUser: res.data.user });
     } catch (error) {
       console.log(error)
       set({ AuthUser: null });
+      set({ isCheckingAuth: false });
     } finally {
       set({ isCheckingAuth: false });
     }
@@ -128,32 +123,53 @@ export const useAuthStore = create((set) => ({
       console.log(error)
     }
   },
-  AddProduct:async(data)=>{
+  AddProduct: async (data) => {
     try {
       console.log(data);
-      const res = await api.post("/api/product/add",data);
+      const res = await api.post("/api/product/add", data);
       console.log(res.data);
     } catch (error) {
       console.log(error)
     }
   },
-  getproduct:async()=>{
+  getproduct: async () => {
     try {
       const res = await api.get("/api/product/mine");
       const data = res.data.products;
-      set({userproduct:data})
+      set({ userproduct: data })
     } catch (error) {
       console.log(error)
     }
   },
-  GetAllProduct:async()=>{
+  selectedproduct: async (data) => {
+    try {
+      const res = await api.get(`/api/product/${data}`);
+      const product_data = res.data.products;
+      console.log(product_data);
+      set({ product_data: product_data })
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  GetAllProduct: async () => {
     try {
       const res = await api.get("/api/product/all");
       const data = res.data.products;
-      set({Allproduct:data})
+      set({ Allproduct: data })
       console.log(res.data.products)
     } catch (error) {
       console.log(error)
     }
-  }
+  },
+  Buy:async(data)=>{
+    try {
+      console.log(data);
+      const res = await api.post("/api/shop/payment",data)
+      // console.log(res.data.tracking_id);
+      set({Tracking_id:res.data.tracking_id});
+    } catch (error) {
+      console.log(error)
+    }
+  },
+
 }));

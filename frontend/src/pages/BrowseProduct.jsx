@@ -70,8 +70,9 @@ const BrowseProduct = () => {
 
           return (
             <div
-              key={p._id}
-              className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition border"
+              key={p._id} 
+              onClick={()=>{navigate(`/product/${p._id}`)}}
+              className="bg-white hover:cursor-pointer rounded-xl shadow p-4 hover:shadow-lg transition border"
             >
               <img
                 src={p.Product_image}
