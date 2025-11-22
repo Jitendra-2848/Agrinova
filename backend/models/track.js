@@ -5,7 +5,7 @@ const { Schema, model } = mongoose;
 const trackSchema = new Schema({
   user: { type: Schema.Types.ObjectId, required: true },
   tracking_id: { type: String, required: true },
-  // places: { type: Array, required: true, default: [] },
+  transporter:{type:Schema.Types.ObjectId,default:null,ref:"User"},
   reached: { type: String },
   status: { type: String, enum: ["Delivered", "Delivering", "Shipping"] }
 });

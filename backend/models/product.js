@@ -5,10 +5,11 @@ const { Schema, model } = mongoose;
 const productSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   Product_name: { type: String, required: true },
-  Product_price: { type: String, required: true },
+  Product_Qty:{type:Number,default:1},
+  Product_price: { type: Number, required: true },
   Product_status: { type: String, default: "Out-Of-Stock" },
   Product_image: { type: String, required: true },
-  special_price: { type: String, default: null },
+  special_price: { type: Number, default: null },
   Product_description : {type:String,default:"No more information."},
   Product_location:{type:String,require:true},
   location_pin:{type:String,require:true},

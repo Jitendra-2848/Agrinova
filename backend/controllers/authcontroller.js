@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
-
+const cloud = require("../middlewares/cloud.js")
 // ✅ Cookie options (secure for production)
 const cookieOptions = {
   httpOnly: true,
@@ -118,10 +118,36 @@ const logoutUser = async (req, res) => {
   }
 };
 
+const updateprofile = async (req, res) => {
+  try {
+    console.log(req.body);
+    const { firstname, email, profile_pic } = req.body;
+    let image;
+    if (profile_pic.includes("https")) {
+      image = profile_pic;
+      console.log("hello");
+    }
+    else {
+      const uploadResult = await cloud.uploader.upload(profile_pic)
+      image = uploadResult.secure_url
+    }
+    await User.findByIdAndUpdate(req.user, {
+      name: firstname,
+      email: email,
+      profile_pic: image,
+    })
+    res.status(200).json({ message: "updated" });
+  } catch (error) {
+    console.log(error)
+    return res.status(500).json({ message: error });
+  }
+}
+
 
 module.exports = {
   registerUser,
   loginUser,
   getProfile,
   logoutUser,
+  updateprofile,
 }

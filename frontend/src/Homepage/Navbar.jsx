@@ -31,7 +31,8 @@ return (
     
     <div className="flex items-center p-1.5 bg-emerald-400 rounded-full min-w-60">
       <div className="bg-white hover:cursor-pointer p-2 rounded-full w-12 h-12 flex items-center justify-center font-bold text-emerald-600 text-lg shadow mr-3">
-        {AuthUser.name[0]}
+        {AuthUser.profile_pic ? <img src={AuthUser.profile_pic} className=' object-cover scale-150 w-full rounded-full overflow-hidden'/> : AuthUser.name[0]}
+        {}
       </div>
       <div className="flex flex-col text-white leading-tight">
         <span className="font-semibold text-gray-100 mb-1">{AuthUser.name}</span>

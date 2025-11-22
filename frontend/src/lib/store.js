@@ -10,6 +10,8 @@ export const useAuthStore = create((set) => ({
   userdata: 1,
   isSignup: false,
   isLoginIn: false,
+  isUpdating:false,
+  buy_product: null,
   currentChatuser: { username: "Jitendra", _id: "sgdhhs" },
   Chats: [
     { sender: '6910474e3e2255e439068de5', text: 'ok', image: null, _id: '6910b0dd7621918180284c80', createdAt: '2025-11-09T15:18:53.592Z' },
@@ -25,6 +27,12 @@ export const useAuthStore = create((set) => ({
   userproduct: [],
   Allproduct: [],
   Tracking_id:null,
+  Myorder:[],
+  trackingData:null,
+  contact_transporter:null, 
+  jobdata:null,
+  activejobdata:[],
+  Del_history:[],
   checkAuth: async () => {
     try {
       const res = await api.get("/api/auth/me");
@@ -128,6 +136,7 @@ export const useAuthStore = create((set) => ({
       console.log(data);
       const res = await api.post("/api/product/add", data);
       console.log(res.data);
+      toast.success(res.data.message);
     } catch (error) {
       console.log(error)
     }
@@ -137,6 +146,7 @@ export const useAuthStore = create((set) => ({
       const res = await api.get("/api/product/mine");
       const data = res.data.products;
       set({ userproduct: data })
+      console.log(data);
     } catch (error) {
       console.log(error)
     }
@@ -151,6 +161,22 @@ export const useAuthStore = create((set) => ({
       console.log(error)
     }
   },
+  deleteProduct: async (product_id) => {
+  try {
+    const res = await api.delete("/api/product/delete", {
+      data: { product_id }   // ← you forgot "data:" here
+    });
+    toast.success(res.data.message);
+
+    // Instantly remove from UI (optional but smooth)
+    set((state) => ({
+      userproduct: state.userproduct.filter((p) => p._id !== product_id)
+    }));
+  } catch (error) {
+    toast.error("Delete failed");
+    console.log(error);
+  }
+},
   GetAllProduct: async () => {
     try {
       const res = await api.get("/api/product/all");
@@ -165,11 +191,118 @@ export const useAuthStore = create((set) => ({
     try {
       console.log(data);
       const res = await api.post("/api/shop/payment",data)
-      // console.log(res.data.tracking_id);
+      console.log(res.data);
       set({Tracking_id:res.data.tracking_id});
     } catch (error) {
       console.log(error)
     }
   },
-
+  updateProduct:async(data)=>{
+    try {
+      const res = await api.put("/api/product/edit",data);
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  updateProfile:async(data)=>{
+    try {
+      set({isUpdating:true});
+      const res = await api.put("/api/auth/profileupdate",data);
+      toast.success(res.data.message);
+    } catch (error) {
+      set({isUpdating:false});
+      console.log(error)
+    }
+    finally{
+      set({isUpdating:false});
+    }
+  },
+  setBuyProduct: (product) => set({ buy_product: product }),
+  RemoveBuy:async()=>{
+    try{
+      set({buy_product:null});
+      set({Tracking_id:null});
+      set({trackingData:null})
+    }
+    catch(error){
+      console.log(error)
+    }
+  },
+  Checkorder:async(data)=>{
+    try {
+      const x = {id:data}
+      const res = await api.post("/api/track/all",x)
+      console.log(res.data.tracks);
+      set({Myorder:res.data.tracks})
+    } catch (error) {
+      console.log(error);
+    }
+  },
+  track_order:async(data)=>{
+    const id = {id:data}
+    try {
+      set({trackingData:null});
+      console.log(data)
+      const res = await api.post("/api/track/track",id)
+      console.log(res.data)
+      set({trackingData:res.data})
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  findjob:async()=>{
+    try {
+      const res = await api.get("/api/transport/findjob");
+      console.log(res.data.data);
+      set({jobdata:res.data.data});
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  acceptjob:async(data)=>{
+    try {
+      const job = {tracking_id:data.tracking_id, pincode:data.reached}
+      const res = await api.put("/api/transport/accept_transport",job);
+      console.log(res.data);  
+    } catch (error) {
+      console.log(error)
+      
+    }
+  },
+  activejob:async()=>{
+    try {
+      const res = await api.get("/api/transport/active");
+      console.log(res.data);
+      set({activejobdata:res.data})
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  updatejob:async(data)=>{
+    try {
+      const res = await api.put("/api/transport/update",data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error)  
+    }
+  },
+  Delivered:async(data)=>{
+    try {
+      console.log(data)
+      const res = await api.put("/api/transport/delivered",data);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  Delivery_history:async()=>{
+    try {
+      const res = await api.get("/api/transport/history");
+      console.log(res.data);
+      set({Del_history:res.data});
+    } catch (error) {
+      console.log(error)
+    }
+  },
 }));

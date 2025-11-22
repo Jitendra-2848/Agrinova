@@ -18,7 +18,7 @@ const app = express();
 mongo.connect(`${process.env.MONGO_URI}`)
   .then(() => console.log("MongoDB connected..."))
   .catch((e) => console.error("Mongo error:", e));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
 app.use(cors({

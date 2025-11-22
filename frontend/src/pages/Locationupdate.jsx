@@ -1,120 +1,300 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../lib/store";
 
 const LocationUpdate = () => {
-  const initialOrders = [
-    {
-      id: 101,
-      product: "Fresh Tomatoes",
-      pickup: "Nashik, Maharashtra",
-      drop: "Mumbai, Maharashtra",
-      currentPincode: "422001",
-      remainingDistance: "180 km",
-    },
-    {
-      id: 102,
-      product: "Organic Wheat",
-      pickup: "Indore, MP",
-      drop: "Ahmedabad, Gujarat",
-      currentPincode: "452001",
-      remainingDistance: "500 km",
-    },
-  ];
+  const navigate = useNavigate();
+  const { activejob, activejobdata, updatejob,Delivered } = useAuthStore();
 
-  const [orders, setOrders] = useState(initialOrders);
-  const [orderId, setOrderId] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [orderId, setOrderId] = useState("");      // tracking_id to update
   const [newPincode, setNewPincode] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [selectedTransporter, setSelectedTransporter] = useState("");
+
+  // Load active jobs once
+  useEffect(() => {
+    const loadJobs = async () => {
+      setLoading(true);
+      await activejob();
+      setLoading(false);
+    };
+    loadJobs();
+  }, [activejob]);
+
+  // Sync store data into local state
+  useEffect(() => {
+    if (!activejobdata) return;
+    const data = Array.isArray(activejobdata)
+      ? activejobdata
+      : activejobdata.data || [];
+    setOrders(data);
+  }, [activejobdata]);
 
   const handleUpdate = () => {
-    const orderIndex = orders.findIndex((order) => order.id === Number(orderId));
-    if (orderIndex === -1) {
-      setMessage("❌ Order ID not found");
+    setMessage("");
+
+    if (!orderId || !newPincode) {
+      setMessage("❌ Please enter both Order ID and Pincode");
       return;
     }
-    const updatedOrders = [...orders];
-    updatedOrders[orderIndex].currentPincode = newPincode;
-    setOrders(updatedOrders);
+
+    if (!/^\d{6}$/.test(newPincode)) {
+      setMessage("❌ Pincode must be a 6 digit number");
+      return;
+    }
+
+    const index = orders.findIndex((order) => order.tracking_id === orderId);
+    if (index === -1) {
+      setMessage("❌ Order ID not found in active jobs");
+      return;
+    }
+
+    const payload = {
+      id: orderId,
+      reachedAt: newPincode,
+      transporter: selectedTransporter,
+    };
+    updatejob(payload);
+
+    const updated = [...orders];
+    updated[index] = { ...updated[index], reached: newPincode };
+    setOrders(updated);
+
     setMessage(`✅ Location updated for Order ID ${orderId}`);
-    setOrderId("");
     setNewPincode("");
   };
-  const navigate = useNavigate()
-  const handleSelectOrder = (id) => {
-    setOrderId(id);
-    setMessage(""); // clear any previous message
+
+  // Mark order as delivered – only when reached pincode === destination pincode
+  const handleDelivered = (order) => {
+    setMessage("");
+
+    const product = order.products?.[0];
+    const destinationPin = product?.delivery?.pincode; // used internally only
+    const currentPin = order.reached;
+
+    if (!destinationPin) {
+      setMessage("Destination not available for this order.");
+      return;
+    }
+
+    // Compare using Number()
+    if (Number(currentPin) !== Number(destinationPin)) {
+      setMessage("Reach the destination first to mark as delivered.");
+      return;
+    }
+
+    const shortId = order.tracking_id.slice(-6).toUpperCase();
+    const confirmed = window.confirm(
+      `Mark order #${shortId} as DELIVERED?\n\nAfter confirming, this order can no longer be updated.`
+    );
+    if (!confirmed) return;
+
+    const payload = {
+      id: order.tracking_id,
+      reachedAt: order.reached,
+      transporter: order.transporter,
+      status: "Delivered",
+    };
+    Delivered(payload);
+
+    setOrders((prev) =>
+      prev.map((o) =>
+        o.tracking_id === order.tracking_id
+          ? { ...o, status: "Delivered" }
+          : o
+      )
+    );
+
+    if (orderId === order.tracking_id) setOrderId("");
+
+    setMessage(`✅ Order #${shortId} marked as Delivered`);
+  };
+
+  const handleSelectOrder = (order) => {
+    if (order.status === "Delivered") return; // can't select delivered
+    setSelectedTransporter(order.transporter);
+    setOrderId(order.tracking_id);
+    setMessage("");
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 md:p-10">
+    <div className="min-h-screen bg-gray-50 p-6 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Back button */}
         <button
-        onClick={() => navigate("/")}
-        className="flex items-center text-green-900 hover:text-green-700 font-semibold mb-2"
-      >
-        ⬅️ Back to Home
-      </button>
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">Update Product Location 🚚</h1>
+          onClick={() => navigate("/")}
+          className="flex items-center text-sm font-semibold text-green-700 hover:text-green-800 mb-4"
+        >
+          ⬅️ Back to Home
+        </button>
 
-      {/* Update Form */}
-      <div className="bg-white shadow rounded-xl p-6 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center md:gap-4">
-          <input
-            type="number"
-            placeholder="Order ID"
-            value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
-            className="border border-gray-300 rounded-lg p-2 flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
-          <input
-            type="text"
-            placeholder="Enter new Pincode"
-            value={newPincode}
-            onChange={(e) => setNewPincode(e.target.value)}
-            className="border border-gray-300 rounded-lg p-2 flex-1 focus:outline-none focus:ring-2 focus:ring-green-400"
-          />
-          <button
-            onClick={handleUpdate}
-            className="mt-2 md:mt-0 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition"
-          >
-            Update Location
-          </button>
+        {/* Page title */}
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">
+          Update Delivery Location
+        </h1>
+
+        {/* Update Form */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6 mb-8">
+          <h2 className="text-lg font-semibold text-gray-800 mb-3">
+            Enter Order ID & New Pincode
+          </h2>
+
+          <div className="flex flex-col md:flex-row gap-3 md:items-center">
+            <input
+              type="text"
+              placeholder="Tracking ID (Order ID)"
+              value={orderId}
+              onChange={(e) => setOrderId(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <input
+              type="text"
+              placeholder="New Pincode (6 digits)"
+              value={newPincode}
+              onChange={(e) => setNewPincode(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+            <button
+              onClick={handleUpdate}
+              className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-lg"
+            >
+              Update Location
+            </button>
+          </div>
+
+          {message && (
+            <p
+              className={`mt-3 text-sm font-medium ${
+                message.startsWith("❌") ? "text-red-600" : "text-green-600"
+              }`}
+            >
+              {message}
+            </p>
+          )}
         </div>
-        {message && <p className="text-gray-700 font-medium">{message}</p>}
-      </div>
 
-      {/* Orders List */}
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Current Orders</h2>
-        <div className="space-y-4">
-          {orders.map((order) => (
-            <div key={order.id} className="bg-white rounded-xl shadow p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-              <div className="flex flex-col md:flex-row md:gap-6">
-                <div>
-                  <h3 className="font-semibold text-gray-800">{order.product}</h3>
-                  <p className="text-gray-600 text-sm">
-                    Pickup: <span className="font-medium">{order.pickup}</span>
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    Drop: <span className="font-medium">{order.drop}</span>
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    Current Pincode: <span className="font-medium">{order.currentPincode}</span>
-                  </p>
-                  <p className="text-gray-600 text-sm">
-                    Remaining Distance: <span className="font-medium">{order.remainingDistance}</span>
-                  </p>
-                </div>
-              </div>
-              <div>
-                <button
-                  onClick={() => handleSelectOrder(order.id)}
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg mt-2 md:mt-0"
+        {/* Orders List */}
+        <div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Active Orders
+          </h2>
+
+          {loading && (
+            <p className="text-gray-500 text-sm">Loading active orders...</p>
+          )}
+
+          {!loading && orders.length === 0 && (
+            <p className="text-gray-500 text-sm">
+              No active orders available to update.
+            </p>
+          )}
+
+          <div className="space-y-4 mt-2">
+            {orders.map((order) => {
+              const isSelected = order.tracking_id === orderId;
+              const isDelivered = order.status === "Delivered";
+
+              const product = order.products?.[0];
+              const destinationPin = product?.delivery?.pincode; // internal only
+              const currentPin = order.reached;
+
+              const canMarkDelivered =
+                !isDelivered &&
+                destinationPin &&
+                Number(currentPin) === Number(destinationPin);
+
+              return (
+                <div
+                  key={order._id}
+                  className={`bg-white rounded-xl border shadow-sm p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 ${
+                    isSelected ? "border-green-500" : "border-gray-200"
+                  }`}
                 >
-                  Update This Order
-                </button>
-              </div>
-            </div>
-          ))}
+                  <div className="space-y-1 text-sm">
+                    <h3 className="font-semibold text-gray-900">
+                      Order #{order.tracking_id.slice(-6).toUpperCase()}
+                    </h3>
+                    <p className="text-gray-600">
+                      Status:{" "}
+                      <span className="font-medium">{order.status}</span>
+                    </p>
+                    <p className="text-gray-600">
+                      Current Pincode:{" "}
+                      <span className="font-medium">
+                        {currentPin || "N/A"}
+                      </span>
+                    </p>
+                    {/* Destination: hide pincode visually, still used internally */}
+                    <p className="text-gray-600">
+                      Destination:{" "}
+                      <span className="font-medium">City X</span>
+                    </p>
+                    <p className="text-gray-600">
+                      Tracking ID:{" "}
+                      <span className="font-mono text-xs">
+                        {order.tracking_id}
+                      </span>
+                    </p>
+                    <p className="text-gray-600">
+                      Transporter:{" "}
+                      <span className="font-mono text-xs">
+                        {order.transporter || "N/A"}
+                      </span>
+                    </p>
+                    <p className="text-gray-600">
+                      User:{" "}
+                      <span className="font-mono text-xs">
+                        {order.user || "N/A"}
+                      </span>
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col gap-2 flex-shrink-0">
+                    {isDelivered ? (
+                      <span className="text-sm font-semibold px-4 py-2 rounded-lg bg-green-100 text-green-700 border border-green-500 text-center">
+                        Delivered
+                      </span>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() => handleSelectOrder(order)}
+                          className={`text-sm font-semibold px-4 py-2 rounded-lg ${
+                            isSelected
+                              ? "bg-green-100 text-green-700 border border-green-500"
+                              : "bg-green-600 text-white hover:bg-green-700"
+                          }`}
+                        >
+                          {isSelected ? "Selected" : "Use This Order"}
+                        </button>
+
+                        <button
+                          onClick={() =>
+                            canMarkDelivered && handleDelivered(order)
+                          }
+                          disabled={!canMarkDelivered}
+                          className={`text-sm font-semibold px-4 py-2 rounded-lg ${
+                            canMarkDelivered
+                              ? "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                          }`}
+                        >
+                          Mark as Delivered
+                        </button>
+
+                        {!canMarkDelivered && !isDelivered && (
+                          <p className="text-[11px] text-gray-400">
+                            Reach the destination pincode to enable delivery.
+                          </p>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

@@ -7,27 +7,28 @@ const { v4: uuidv4 } = require('uuid');
 // ✅ Payment success → create order + tracking
  const paymentSuccess = async (req, res) => {
   try {
-    const { productid,initialAdd,status,delivery } = req.body;
+    const { productid,quantity,status,delivery } = req.body;
+    console.log(req.body);
     const trackingId = uuidv4();
     const shopRecord = new Shop({
       vendor: req.user,
       productid:productid,
       tracking_id: trackingId,
+      quantity:quantity,
       status:status,
-      from:initialAdd,
       delivery:delivery,
     });
-    const pincode = 382405; 
     const MakingTrack = new Track({
       user:req.user,
-      tracking_id:trackingId, 
-      reached:pincode,
-      status:"Shipping",
+      tracking_id:trackingId,
+      reached:delivery.pincode,
+      status:"Placed",
     })
     console.log(MakingTrack);
     console.log(shopRecord)
+    await shopRecord.save();
+    await MakingTrack.save();
     return res.status(200).json(shopRecord);
-
   } catch (error) {
     console.error("paymentSuccess error:", error.message);
     return res.status(500).json({ message: "Internal server error" });

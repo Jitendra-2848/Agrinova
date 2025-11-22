@@ -23,6 +23,7 @@ import Demo from "./pages/Demo";
 import Product from "./pages/Product";
 import { Loader } from "lucide-react";
 import Buyandpayment from "./pages/Buyandpayment";
+import EditProduct from "./pages/EditProduct";
 const App = () => {
   const location = useLocation();
   const { checkAuth, AuthUser, Authtype, isCheckingAuth } = useAuthStore();
@@ -82,6 +83,10 @@ const App = () => {
         <Route
           path="/addProduct"
           element={AuthUser ? <AddProduct /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/editProduct/:id"
+          element={AuthUser ? <EditProduct /> : <Navigate to="/" />}
         />
         <Route
           path="/manage"

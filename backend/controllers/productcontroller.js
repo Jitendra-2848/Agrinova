@@ -4,7 +4,7 @@ const cloud = require("../middlewares/cloud.js")
 const addProduct = async (req, res) => {
   try {
     console.log(req.body);
-    const { Product_name, Product_price, Product_status, Product_image, Product_description } = req.body;
+    const { Product_name, Product_price, Product_status, Product_image, Product_description, Product_Qty, Product_location, location_pin } = req.body;
     const uploadResult = await cloud.uploader.upload(Product_image);
     uploadedPost = uploadResult.secure_url;
     console.log(uploadedPost)
@@ -13,6 +13,9 @@ const addProduct = async (req, res) => {
       Product_name,
       Product_price,
       Product_status,
+      Product_Qty,
+      location_pin,
+      Product_location,
       Product_image: uploadedPost,
       Product_description
     });
@@ -29,30 +32,39 @@ const addProduct = async (req, res) => {
 // ✅ Edit product
 const editProduct = async (req, res) => {
   try {
-    const { Product_id, Product_name, Product_price, Product_status, Product_image, Product_description } = req.body;
-
-    await Product.findByIdAndUpdate(Product_id, {
+    const { Product_id, Product_name, Product_price, Product_status, Product_image, Product_description, Product_Qty, Product_location, location_pin, special_price } = req.body;
+    let image;
+    if (Product_image.includes("https")) {
+      image = Product_image
+      console.log("hello");
+    }
+    else {
+      const uploadResult = await cloud.uploader.upload(Product_image)
+      image = uploadResult.secure_url
+    }
+    const record = await Product.findByIdAndUpdate(Product_id, {
       Product_name,
       Product_price,
       Product_status,
-      Product_image,
-      Product_description
+      Product_image:image,
+      Product_description,
+      special_price,
+      Product_Qty,
+      Product_location,
+      location_pin
     });
-
+    console.log(record);
     return res.status(200).json({ message: "Edit successful" });
   } catch (error) {
     console.log(error.message);
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
-// ✅ Delete product
 const deleteProduct = async (req, res) => {
   try {
-    const { Product_id } = req.body;
-
-    await Product.findByIdAndDelete(Product_id);
-
+    const { product_id } = req.body;
+    console.log(product_id);
+    await Product.findByIdAndDelete(product_id);
     return res.status(200).json({ message: "Delete successful" });
   } catch (error) {
     console.log(error.message);
@@ -81,7 +93,7 @@ const getMyProducts = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-const getproduct = async (req,res) => {
+const getproduct = async (req, res) => {
   try {
     const id = req.params.id;
     const data = await Product.findById(id);
