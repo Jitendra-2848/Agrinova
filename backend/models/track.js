@@ -7,7 +7,9 @@ const trackSchema = new Schema({
   tracking_id: { type: String, required: true },
   transporter:{type:Schema.Types.ObjectId,default:null,ref:"User"},
   reached: { type: String },
-  status: { type: String, enum: ["Delivered", "Delivering", "Shipping"] }
-});
+  charge:{type:Number,required:true},
+  distance_cover:{type:Number,default:0},
+  status: { type: String, enum: ["Delivered", "Delivering", "Shipping","Placed"] }
+},{timestamps:true});
 
 module.exports =  model("track", trackSchema);

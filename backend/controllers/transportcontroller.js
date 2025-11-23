@@ -1,7 +1,6 @@
 const { api } = require("../utils/transporter.js");
 const Track = require("../models/track.js");
 const shop = require("../models/shop.js");
-
 // ✅ Update tracking while shipment is moving
 const updateTrack = async (req, res) => {
   try {
@@ -9,9 +8,18 @@ const updateTrack = async (req, res) => {
     if(transporter != req.user){
       return res.status(500).json({ message: "Chalaki nhi mittar jo tera kaam hai vo kar dusro ki chize change mat kar."});
     }
+
+
+
+    //here you have to update the distance also DEVANASH   
+
+
     const updated = await Track.findOneAndUpdate(
       {tracking_id:id},
-      { reached: reachedAt, status: "Delivering" }
+      { reached: reachedAt, status: "Delivering",
+        // distance_cover:"Here devansh"
+       }
+
     );
     await updated.save();
     return res.status(200).json({
@@ -25,7 +33,8 @@ const updateTrack = async (req, res) => {
 };
 const accepting = async (req, res) => {
   try {
-    const { tracking_id, pincode } = req.body;
+    const { tracking_id, pincode} = req.body;
+    console.log(req.body);
     const record = await Track.findOneAndUpdate({ tracking_id: tracking_id }, {
       reached: pincode,
       status: "Shipping",
@@ -34,7 +43,7 @@ const accepting = async (req, res) => {
     await record.save()
     return res.status(200).json(record)
   } catch (error) {
-    console.log(error.message)
+    console.log(error)
     return res.status(500).json({ message: "Internal server errror.." });
   }
 }
@@ -60,6 +69,7 @@ const find = async (req, res) => {
         return {
           tracking_id: track.tracking_id,
           status: track.status,
+          charge:track.charge,
           reached: track.reached || null,
           transporter: track.transporter || null,
           products: productDetails,
@@ -112,12 +122,45 @@ const rejected = async (req, res) => {
 };
 const history = async(req,res)=>{
   try {
-    const record = await Track.find({transporter:req.user,status:"Delivered"});
-    return res.status(200).json(record);
-  } catch (error) {
-    console.log(error)
-    return res.status(500).json({message:"internal server error"})
-  }
+    // 1️⃣ Fetch all delivered tracks for this transporter
+    const tracks = await Track.find({
+        transporter: req.user,
+        status: "Delivered"
+    }).lean();
+
+    // 2️⃣ For each track, fetch related products from shop collection
+    const result = await Promise.all(
+      tracks.map(async (track) => {
+        const products = await shop.find({ tracking_id: track.tracking_id }).lean();
+
+        const productDetails = products.map((p) => ({
+          productId: p.productid,
+          vendor: p.vendor,
+          quantity: p.quantity,
+          status: p.status,
+          delivery: p.delivery,
+        }));
+        return {
+          tracking_id: track.tracking_id,
+          status: track.status,
+          distance_cover:track.distance_cover,
+          charge:track.charge,
+          reached: track.reached || null,
+          transporter: track.transporter || null,
+          products: productDetails,
+          date:track.updatedAt,
+        };
+      })
+    );
+
+    // 3️⃣ Send response
+    return res.status(200).json({ data: result });
+
+} catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+}
+
 }
 // ✅ AI Test Helper (For debugging only)
 const aiTest = async (req, res) => {
@@ -189,6 +232,7 @@ const Activejobs = async(req,res)=>{
 }
 
 }
+
 module.exports = {
   updateTrack,
   delivered,

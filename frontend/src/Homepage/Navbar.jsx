@@ -1,10 +1,11 @@
 // AgriMarketNavbar.jsx
 import React from 'react';
 import { useAuthStore } from '../lib/store';
+import { useNavigate } from 'react-router-dom';
 
 const AgriMarketNavbar = () =>{
   const {AuthUser} = useAuthStore()
-
+  const navigate = useNavigate()
 return (
   <nav className="bg-emerald-600 h-[90px] flex items-center px-8 w-full shadow-md justify-between">
     
@@ -18,10 +19,10 @@ return (
           <a href="#" className="text-white font-medium text-base hover:text-green-100 transition">Home</a>
         </li>
         <li>
-          <a href="#" className="text-white font-medium text-base hover:text-green-100 transition">Marketplace</a>
+          <a href="/Product" className="text-white font-medium text-base hover:text-green-100 transition">Marketplace</a>
         </li>
         <li>
-          <a href="#" className="text-white font-medium text-base hover:text-green-100 transition">Analytics</a>
+          <a href="/About" className="text-white font-medium text-base hover:text-green-100 transition">About us</a>
         </li>
         <li>
           <a href="#" className="text-white font-medium text-base hover:text-green-100 transition">Notifications</a>
@@ -29,9 +30,9 @@ return (
       </ul>
     </div>
     
-    <div className="flex items-center p-1.5 bg-emerald-400 rounded-full min-w-60">
+    <div  onClick={()=>{navigate("/settings")}}  className="flex items-center p-1.5 bg-emerald-400 rounded-full min-w-60 hover:cursor-pointer">
       <div className="bg-white hover:cursor-pointer p-2 rounded-full w-12 h-12 flex items-center justify-center font-bold text-emerald-600 text-lg shadow mr-3">
-        {AuthUser.profile_pic ? <img src={AuthUser.profile_pic} className=' object-cover scale-150 w-full rounded-full overflow-hidden'/> : AuthUser.name[0]}
+        {AuthUser.profile_pic ? <img src={AuthUser.profile_pic} className=' object-cover scale-150 w-full h-full rounded-full overflow-hidden'/> : AuthUser.name[0]}
         {}
       </div>
       <div className="flex flex-col text-white leading-tight">

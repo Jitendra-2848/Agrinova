@@ -45,8 +45,8 @@ const Buyandpayment = () => {
         status: "Paid",
         delivery: { address, pincode, phone },
       };
-
       await Buy(payload);
+      // updateProduct()
       setSuccess(true);
     } catch (err) {
       console.error("Frontend error:", err);

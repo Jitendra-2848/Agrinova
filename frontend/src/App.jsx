@@ -24,6 +24,7 @@ import Product from "./pages/Product";
 import { Loader } from "lucide-react";
 import Buyandpayment from "./pages/Buyandpayment";
 import EditProduct from "./pages/EditProduct";
+import About from "./pages/About";
 const App = () => {
   const location = useLocation();
   const { checkAuth, AuthUser, Authtype, isCheckingAuth } = useAuthStore();
@@ -135,6 +136,10 @@ const App = () => {
         <Route
           path="/buy"
           element={AuthUser ? <Buyandpayment /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/About"
+          element={AuthUser ? <About /> : <Navigate to="/" />}
         />
       </Routes>
     </>

@@ -123,17 +123,18 @@ const ShipmentTracking = () => {
                 className="absolute h-1 bg-green-500 top-1/2 -translate-y-1/2 rounded-full transition-all"
                 style={{
                   width:
-                    detail.status === "Pending"
+                    detail.status === "Placed"
                       ? "0%"
                       : detail.status === "Shipping"
                       ? "50%"
-                      : "100%",
+                      : detail.status === "Delivered" ?
+                      "100%" : "70%",
                 }}
               />
 
               {[FiPackage, FiTruck, FiCheckCircle].map((Icon, i) => {
                 const active =
-                  (detail.status === "Pending" && i === 0) ||
+                  (detail.status === "Placed" && i === 0) ||
                   (detail.status === "Shipping" && i <= 1) ||
                   (detail.status === "Delivered");
 

@@ -19,5 +19,6 @@ router.delete("/delete", verifyToken, deleteProduct);
 router.get("/all", getAllProducts);
 router.get("/mine", verifyToken, getMyProducts);
 router.get("/:id", verifyToken, getproduct);
+// router.put("/")
 
 module.exports = router;

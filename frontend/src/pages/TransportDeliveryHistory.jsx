@@ -4,7 +4,7 @@ import { useAuthStore } from "../lib/store";
 
 const DeliveryHistory = () => {
   const navigate = useNavigate();
-  const { Delivery_history, Del_history } = useAuthStore();
+  const { Delivery_history, Del_history,transporter_income } = useAuthStore();
 
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,6 +18,10 @@ const DeliveryHistory = () => {
     };
     load();
   }, []);
+
+  useEffect(()=>{
+
+  },[])
 
   // Sync store data into component state
   useEffect(() => {
@@ -55,7 +59,7 @@ const DeliveryHistory = () => {
         <h2 className="text-xl font-semibold text-gray-700 mb-2">
           Total Earnings
         </h2>
-        <div className="text-3xl font-bold text-green-600">₹{totalEarnings}</div>
+        <div className="text-3xl font-bold text-green-600">₹{transporter_income}</div>
       </div>
 
       {/* Table */}
@@ -64,10 +68,10 @@ const DeliveryHistory = () => {
           <thead className="bg-gray-100">
             <tr>
               <th className="text-left px-6 py-3 text-gray-700 font-semibold">Order ID</th>
-              <th className="text-left px-6 py-3 text-gray-700 font-semibold">Product</th>
-              <th className="text-left px-6 py-3 text-gray-700 font-semibold">Pickup → Drop</th>
+              {/* <th className="text-left px-6 py-3 text-gray-700 font-semibold">Product</th> */}
+              {/* <th className="text-left px-6 py-3 text-gray-700 font-semibold">Pickup → Drop</th> */}
               <th className="text-left px-6 py-3 text-gray-700 font-semibold">Distance</th>
-              <th className="text-left px-6 py-3 text-gray-700 font-semibold">Charges</th>
+              <th className="text-left px-6 py-3 text-gray-700 font-semibold">Income</th>
               <th className="text-left px-6 py-3 text-gray-700 font-semibold">Delivered On</th>
               <th className="text-left px-6 py-3 text-gray-700 font-semibold">Status</th>
             </tr>
@@ -91,21 +95,20 @@ const DeliveryHistory = () => {
             )}
 
             {!loading &&
-              history.map((order) => {
-                const product = order.products?.[0];
-                const amount = product?.delivery?.charge || 0;
-                const distance = product?.delivery?.distance || "N/A";
-                const pickup = product?.delivery?.pickup || "Unknown";
-                const drop = product?.delivery?.pincode || "Unknown";
-
+              history.map((order,index) => {
+                // const product = order.products?.[index];
+                const amount = order?.charge || 0;
+                const distance = order?.delivery?.distance_cover || "Incomplete";
+                const pickup = order?.delivery?.pickup || "Unknown";
+                const drop = order?.delivery?.pincode || "Unknown";
+                // console.log(product)
                 return (
-                  <tr key={order._id} className="border-b hover:bg-gray-50 transition">
+                  <tr key={index} className="border-b hover:bg-gray-300 transition hover:cursor-pointer" onClick={()=>{navigate(`/track?tracking_id=${order.tracking_id}`)}}>
                     <td className="px-6 py-4">{order.tracking_id.slice(-6).toUpperCase()}</td>
-                    <td className="px-6 py-4">{product?.name || "N/A"}</td>
-                    <td className="px-6 py-4">{pickup} → {drop}</td>
                     <td className="px-6 py-4">{distance}</td>
                     <td className="px-6 py-4">₹{amount}</td>
-                    <td className="px-6 py-4">{order.updatedAt?.slice(0, 10) || "N/A"}</td>
+                   <td className="px-6 py-4">{order.date ? new Date(order.date).toLocaleDateString() : "N/A"}</td>
+
                     <td className="px-6 py-4 font-semibold text-green-600">Delivered</td>
                   </tr>
                 );

@@ -221,7 +221,7 @@ const LocationUpdate = () => {
                       <span className="font-medium">{order.status}</span>
                     </p>
                     <p className="text-gray-600">
-                      Current Pincode:{" "}
+                      Current Location:{" "}
                       <span className="font-medium">
                         {currentPin || "N/A"}
                       </span>
@@ -229,24 +229,12 @@ const LocationUpdate = () => {
                     {/* Destination: hide pincode visually, still used internally */}
                     <p className="text-gray-600">
                       Destination:{" "}
-                      <span className="font-medium">City X</span>
+                      <span className="font-medium">City X,{order.products[0].delivery.pincode}</span>
                     </p>
                     <p className="text-gray-600">
                       Tracking ID:{" "}
                       <span className="font-mono text-xs">
                         {order.tracking_id}
-                      </span>
-                    </p>
-                    <p className="text-gray-600">
-                      Transporter:{" "}
-                      <span className="font-mono text-xs">
-                        {order.transporter || "N/A"}
-                      </span>
-                    </p>
-                    <p className="text-gray-600">
-                      User:{" "}
-                      <span className="font-mono text-xs">
-                        {order.user || "N/A"}
                       </span>
                     </p>
                   </div>

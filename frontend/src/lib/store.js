@@ -33,6 +33,10 @@ export const useAuthStore = create((set) => ({
   jobdata:null,
   activejobdata:[],
   Del_history:[],
+  transporter_income:null,
+  farmer_detail:[],
+  vendor_detail:[],
+  transporter_detail:[],
   checkAuth: async () => {
     try {
       const res = await api.get("/api/auth/me");
@@ -262,6 +266,7 @@ export const useAuthStore = create((set) => ({
   },
   acceptjob:async(data)=>{
     try {
+      console.log(data)
       const job = {tracking_id:data.tracking_id, pincode:data.reached}
       const res = await api.put("/api/transport/accept_transport",job);
       console.log(res.data);  
@@ -299,7 +304,10 @@ export const useAuthStore = create((set) => ({
   Delivery_history:async()=>{
     try {
       const res = await api.get("/api/transport/history");
-      console.log(res.data);
+      const data = res.data.data;
+      console.log(data)
+      const totalCharge = data.reduce((sum, x) => sum + (x.charge || 0), 0); 
+      set({transporter_income:totalCharge});
       set({Del_history:res.data});
     } catch (error) {
       console.log(error)

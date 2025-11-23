@@ -17,6 +17,7 @@ const Product = () => {
     GetAllProduct,
     Allproduct,
     setBuyProduct,
+    Authtype
   } = useAuthStore();
 
   const [product, setProduct] = useState(null);
@@ -123,13 +124,16 @@ const Product = () => {
                   <FiPackage size={22} />
                   <span className="font-semibold">
                     Available Quantity:{" "}
-                    <span className="text-green-600">
+                    <span className={product.Product_Qty ? `text-green-600` : `text-red-600`}>
                       {product.Product_Qty} units
                     </span>
                   </span>
                 </div>
 
                 {/* Action Buttons */}
+                {
+                  Authtype == "vendor" && 
+                  Number(product.Product_Qty) > 0 && 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button
                     onClick={() => {
@@ -154,6 +158,13 @@ const Product = () => {
                     Bargain with Seller
                   </button>
                 </div>
+                  }
+                  {
+                    Number(product.Product_Qty) <= 0 && 
+                    <div>
+                      <p className="text-red-600 font-semibold text-lg font-masti">Sorry,We are out of stock.</p>
+                    </div>
+                  }
               </div>
             </div>
           </div>

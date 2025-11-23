@@ -1,28 +1,40 @@
-const { api } = require( "../utils/transporter.js");
-const Message = require( "../models/message.js");
-const Shop = require( "../models/shop.js");
-const Track = require( "../models/track.js");
+const { api } = require("../utils/transporter.js");
+const Message = require("../models/message.js");
+const Shop = require("../models/shop.js");
+const Track = require("../models/track.js");
 const { v4: uuidv4 } = require('uuid');
+const Product = require("../models/product.js");
 
-// ✅ Payment success → create order + tracking
- const paymentSuccess = async (req, res) => {
+// Payment success → create order + tracking
+const paymentSuccess = async (req, res) => {
   try {
-    const { productid,quantity,status,delivery } = req.body;
+    const { productid, quantity, status, delivery } = req.body;
     console.log(req.body);
     const trackingId = uuidv4();
     const shopRecord = new Shop({
       vendor: req.user,
-      productid:productid,
+      productid: productid,
       tracking_id: trackingId,
-      quantity:quantity,
-      status:status,
-      delivery:delivery,
+      quantity: quantity,
+      status: status,
+      delivery: delivery,
     });
+    const initiallocation = await Product.findByIdAndUpdate(
+      productid,
+      { $inc: { Product_Qty: - quantity } },
+      { new: true }          // return updated document
+    );
+
+    console.log(initiallocation)
+    // devansh you have to do this pincode distance so it can calculate the price  
+    // const charge = pincode_distance * Math.floor(Math.random()*10);
+    const charge = 999;
     const MakingTrack = new Track({
-      user:req.user,
-      tracking_id:trackingId,
-      reached:delivery.pincode,
-      status:"Placed",
+      user: req.user,
+      tracking_id: trackingId,
+      reached: initiallocation.location_pin,
+      charge: charge,
+      status: "Placed",
     })
     console.log(MakingTrack);
     console.log(shopRecord)
