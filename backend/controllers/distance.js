@@ -69,3 +69,48 @@
 //     res.status(500).json({ msg: "Server error" });
 //   }
 // };
+
+
+
+// distance.js
+
+// Correct import
+const Pincode = require("pincode-distance").default;
+
+// create instance
+const pd = new Pincode();
+
+/**
+ * Returns distance in KM between two Indian pincodes
+ * @param {string|number} p1 
+ * @param {string|number} p2 
+ * @returns number | null
+ */
+function distance(p1, p2) {
+  try {
+    if (!p1 || !p2) {
+      throw new Error("Both pincodes are required");
+    }
+
+    // Ensure they are strings
+    p1 = String(p1);
+    p2 = String(p2);
+
+    const dist = pd.getDistance(p1, p2);
+
+    if (dist === null || dist === undefined) {
+      console.log("Invalid pincode(s)");
+      return null;
+    }
+
+    return dist;
+
+  } catch (err) {
+    console.error("Error calculating distance:", err.message);
+    return null;
+  }
+}
+
+// export function
+module.exports = distance;
+

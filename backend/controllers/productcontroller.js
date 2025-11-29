@@ -1,6 +1,9 @@
 const Product = require("../models/product.js");
 const cloud = require("../middlewares/cloud.js")
-// ✅ Add a new product
+const farmer = require("../models/user_detail/farmer.js")
+const dis = require("../middlewares/distance.js");
+const axios = require("axios");
+//   Add a new product
 const addProduct = async (req, res) => {
   try {
     console.log(req.body);
@@ -8,9 +11,17 @@ const addProduct = async (req, res) => {
     const uploadResult = await cloud.uploader.upload(Product_image);
     uploadedPost = uploadResult.secure_url;
     console.log(uploadedPost)
+    // devansh you have to do this 
+    //const initial_city = your_function(location_pin);
+    const details = await axios.get(
+      `https://api.postalpincode.in/pincode/${382405}`
+    );
+    const city = details.data[0].PostOffice[0].District;
+    const initial_city = "city";
     const record = new Product({
       userId: req.user,       // comes = require( verifyToken
       Product_name,
+      city: initial_city,
       Product_price,
       Product_status,
       Product_Qty,
@@ -19,6 +30,11 @@ const addProduct = async (req, res) => {
       Product_image: uploadedPost,
       Product_description
     });
+    const data = await farmer.findOneAndUpdate({ user: req.user }, {
+      $inc: {
+        Products_listed: 1,
+      }
+    })
 
     await record.save();
 
@@ -29,7 +45,7 @@ const addProduct = async (req, res) => {
   }
 };
 
-// ✅ Edit product
+//   Edit product
 const editProduct = async (req, res) => {
   try {
     const { Product_id, Product_name, Product_price, Product_status, Product_image, Product_description, Product_Qty, Product_location, location_pin, special_price } = req.body;
@@ -46,7 +62,7 @@ const editProduct = async (req, res) => {
       Product_name,
       Product_price,
       Product_status,
-      Product_image:image,
+      Product_image: image,
       Product_description,
       special_price,
       Product_Qty,
@@ -64,6 +80,11 @@ const deleteProduct = async (req, res) => {
   try {
     const { product_id } = req.body;
     console.log(product_id);
+    const data = await farmer.findOneAndUpdate({ user: req.user }, {
+      $inc: {
+        Products_listed: -1,
+      }
+    })
     await Product.findByIdAndDelete(product_id);
     return res.status(200).json({ message: "Delete successful" });
   } catch (error) {
@@ -71,8 +92,7 @@ const deleteProduct = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
-// ✅ Get ALL products
+//   Get ALL products
 const getAllProducts = async (req, res) => {
   try {
     const allItems = await Product.find({});
@@ -82,8 +102,7 @@ const getAllProducts = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 };
-
-// ✅ Get products of logged-in user
+//   Get products of logged-in user
 const getMyProducts = async (req, res) => {
   try {
     const data = await Product.find({ userId: req.user });
@@ -105,7 +124,6 @@ const getproduct = async (req, res) => {
     return res.status(500).json({ message: "Something went wrong" });
   }
 }
-
 module.exports = {
   addProduct,
   editProduct,

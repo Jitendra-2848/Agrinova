@@ -2,42 +2,67 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
 const cloud = require("../middlewares/cloud.js")
-// ✅ Cookie options (secure for production)
+//Cookie options (secure for production)
 const cookieOptions = {
   httpOnly: true,
-  secure: false,            // ❗ Set TRUE in production (HTTPS)
+  secure: false,   
   sameSite: "lax",
   maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
+const VendorDetail = require("../models/user_detail/vendor")
+const FarmerDetail= require("../models/user_detail/farmer")
+const TransporterDetail = require("../models/user_detail/transporter")
 
-// ✅ REGISTER
 const registerUser = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-
     const existingUser = await User.findOne({ email });
-    if (existingUser)
-      return res.status(400).json({ error: "Email already exists" });
-
+    if (existingUser) return res.status(400).json({ error: "Email already exists" });
     const hashed = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({
-      name,
-      email,
-      password: hashed,
-      role
-    });
-
-    // ✅ Generate JWT
+    const newUser = await User.create({ name, email, password: hashed, role });
+    const Models = {
+      farmer: FarmerDetail,
+      vendor: VendorDetail,
+      transporter: TransporterDetail
+    };
+    const Defaults = {
+      farmer: {
+        Active_Crops: 0,
+        Total_Revenue: 0,
+        Products_listed: 0,
+        Monthly_sale: 0,
+        Monthly_Sales_History:[],
+        Crops:[],
+        Orders:[],
+      },
+      vendor: {
+        Active_Orders: 0,
+        Total_Purchases: 0,
+        Wishlist_Items: 0,
+        Total_Spent: 0,
+        Purchase_History:[],
+      },
+      transporter: {
+        Active_Deliveries: 0,
+        Total_Distance: 0,
+        Completed_jobs: 0,
+        Earnings: 0,
+        Delivery_History:[],
+      }
+    };
+    const DetailModel = Models[role];
+    if (!DetailModel) return res.status(400).json({ error: "Invalid user role" });
     const token = jwt.sign(
       { id: newUser._id, role: newUser.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
-    // ✅ Store token in HTTPONLY cookie
+    const record = await DetailModel.create({
+      user: newUser._id,
+      ...Defaults[role]
+    });
+    await record.save();
     res.cookie("token", token, cookieOptions);
-
     return res.status(201).json({
       message: "Signup successful!",
       user: {
@@ -45,15 +70,14 @@ const registerUser = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role
-      }
+      },
+      details: record
     });
   } catch (err) {
     console.error("Register error:", err);
-    return res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
 };
-
-// ✅ LOGIN
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -69,14 +93,14 @@ const loginUser = async (req, res) => {
       return res.status(400).json({ error: "Invalid credentials" });
     }
 
-    // ✅ Generate JWT
+    //Generate JWT
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
 
-    // ✅ Store in secure cookie instead of localStorage
+    //   Store in secure cookie instead of localStorage
     res.cookie("token", token, cookieOptions);
 
     return res.json({
@@ -93,8 +117,6 @@ const loginUser = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-
-// ✅ GET PROFILE
 const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user).select("-password");
@@ -106,8 +128,6 @@ const getProfile = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-
-// ✅ LOGOUT
 const logoutUser = async (req, res) => {
   try {
     res.clearCookie("token", cookieOptions);
@@ -117,7 +137,6 @@ const logoutUser = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
-
 const updateprofile = async (req, res) => {
   try {
     console.log(req.body);
@@ -142,7 +161,6 @@ const updateprofile = async (req, res) => {
     return res.status(500).json({ message: error });
   }
 }
-
 
 module.exports = {
   registerUser,

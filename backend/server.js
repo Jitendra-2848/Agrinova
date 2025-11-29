@@ -1,10 +1,11 @@
-require("dotenv").config()
+require("dotenv").config();
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const mongo = require("mongoose")
-// const connectDB = require("./config/db.js");
+const mongo = require("mongoose");
 const cookieParser = require("cookie-parser");
+
+// Import routes
 const authRoutes = require("./routes/authroutes.js");
 const distanceRoutes = require("./routes/distanceroute.js");
 const cartRoutes = require("./routes/cartroute.js");
@@ -13,24 +14,88 @@ const productRoutes = require("./routes/productroute.js");
 const shopRoutes = require("./routes/shoproutes.js");
 const trackRoutes = require("./routes/trackroutes.js");
 const transportRoutes = require("./routes/transportroute.js");
+const user_detail = require("./routes/detail");
+
 dotenv.config();
+
 const app = express();
-mongo.connect(`${process.env.MONGO_URI}`)
-  .then(() => console.log("MongoDB connected..."))
-  .catch((e) => console.error("Mongo error:", e));
+
+const http = require("http");
+const server = http.createServer(app);
+
+const { Server } = require("socket.io");
+const io = new Server(server, {
+  cors: {
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://hoppscotch.io"
+    ],
+    credentials: true,
+  },
+});
+
+// Make io accessible in routes
+app.set("io", io);
+
+// Socket.IO connection handling
+io.on("connection", (socket) => {
+  console.log("🔥 User connected:", socket.id);
+
+  // Join chat room
+  socket.on("join_room", (roomId) => {
+    socket.join(roomId);
+    console.log(`➡️ User ${socket.id} joined room: ${roomId}`);
+  });
+
+  // Leave chat room
+  socket.on("leave_room", (roomId) => {
+    socket.leave(roomId);
+    console.log(`⬅️ User ${socket.id} left room: ${roomId}`);
+  });
+
+  // Typing indicator
+  socket.on("typing", ({ roomId, userId }) => {
+    socket.to(roomId).emit("typing", { userId });
+  });
+
+  socket.on("stop_typing", ({ roomId, userId }) => {
+    socket.to(roomId).emit("stop_typing", { userId });
+  });
+
+  // Handle disconnect
+  socket.on("disconnect", () => {
+    console.log("❌ User disconnected:", socket.id);
+  });
+});
+
+// MongoDB connection
+mongo
+  .connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ MongoDB connected..."))
+  .catch((e) => console.error("❌ Mongo error:", e));
+
+// Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
-app.use(cors({
-  origin: ["http://localhost:5173",    // frontend
-    "https://hoppscotch.io",   // hoppscotch cloud
-    "http://localhost:3000"],
-  credentials: true,
-}));
-//app.get("/", (req, res) => res.send("AgriNova Backend Running "));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://hoppscotch.io",
+      "http://localhost:3000",
+    ],
+    credentials: true,
+  })
+);
+
+// Health check
 app.get("/", (req, res) => {
-  res.send("AgriNova Backend Running ");
+  res.send("🌾 AgriNova Backend Running");
 });
+
+// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
 app.use("/api/cart", cartRoutes);
@@ -39,7 +104,10 @@ app.use("/api/product", productRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/track", trackRoutes);
 app.use("/api/transport", transportRoutes);
+app.use("/api/user_detail", user_detail);
 
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on port ${process.env.PORT}`)
-);
+// Start server
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server + Socket.IO running on port ${PORT}`);
+});

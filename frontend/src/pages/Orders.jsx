@@ -1,33 +1,20 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "../lib/store";
 
 const Orders = () => {
-  // Dummy Orders With Products
-  const orders = [
-    {
-      id: 101,
-      customer: "Alice Johnson",
-      date: "2025-01-10",
-      status: "Shipped",
-      total: 89.98,
-      products: [
-        { id: 1, name: "Wireless Bluetooth Headphones", qty: 1, price: 59.99 },
-        { id: 2, name: "Stainless Steel Water Bottle", qty: 1, price: 29.99 },
-      ],
-    },
-    {
-      id: 102,
-      customer: "Mark Lee",
-      date: "2025-01-12",
-      status: "Processing",
-      total: 34.99,
-      products: [{ id: 3, name: "Gaming Mouse RGB", qty: 1, price: 34.99 }],
-    },
-  ];
+  const { orders_farmer, vieworder } = useAuthStore();
+
+  useEffect(() => {
+    vieworder(); // Fetch orders on mount
+  }, []);
+  const navigate = useNavigate()
+  useEffect(() => {
+    console.log(orders_farmer);
+  }, [orders_farmer]);
 
   return (
     <div className="p-5 md:p-10 max-w-7xl mx-auto">
-
       {/* Back Button */}
       <Link
         to="/"
@@ -40,19 +27,20 @@ const Orders = () => {
 
       {/* Responsive Cards Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {orders.map((order) => (
+        {orders_farmer?.map((order) => (
           <div
-            key={order.id}
+            key={order._id}
             className="bg-white border rounded-xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
           >
             {/* Order header */}
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Order #{order.id}</h3>
+              <h3 className="text-xl font-bold text-gray-900">
+                Tracking #{order.tracking_id.slice(0, 8)}...
+              </h3>
 
               <span
-                className={`px-3 py-1 rounded-full text-sm font-semibold
-                ${
-                  order.status === "Shipped"
+                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                  order.status === "Paid" || order.status === "Shipped"
                     ? "bg-green-100 text-green-700"
                     : "bg-yellow-100 text-yellow-700"
                 }`}
@@ -63,42 +51,36 @@ const Orders = () => {
 
             {/* Order details */}
             <div className="text-gray-700 space-y-1 mb-4">
+              {/* <p>
+                <span className="font-semibold">City:</span> {order.delivery?.city || "Unknown"}
+              </p> */}
               <p>
-                <span className="font-semibold">Customer:</span> {order.customer}
+                <span className="font-semibold">Distance:</span>{" "}
+                {order.distance} km
               </p>
               <p>
-                <span className="font-semibold">Date:</span>{" "}
-                {new Date(order.date).toLocaleDateString()}
-              </p>
-              <p>
-                <span className="font-semibold">Total:</span> $
-                {order.total.toFixed(2)}
+                <span className="font-semibold">Quantity:</span>{" "}
+                {order.quantity}
               </p>
             </div>
 
-            {/* Product list */}
-            <h4 className="font-semibold text-gray-900 mb-2">Products</h4>
-
-            <div className="bg-gray-50 border rounded-lg divide-y">
-              {order.products.map((p) => (
-                <div
-                  key={p.id}
-                  className="p-3 flex items-center justify-between"
-                >
-                  <div>
-                    <p className="font-medium text-gray-800">{p.name}</p>
-                    <p className="text-sm text-gray-600">Qty: {p.qty}</p>
-                  </div>
-                  <p className="font-semibold text-gray-800">
-                    ${p.price.toFixed(2)}
-                  </p>
+            {/* Delivery address */}
+            {order.delivery && (
+              <>
+                <h4 className="font-semibold text-gray-900 mb-2">Delivery</h4>
+                <div className="bg-gray-50 border rounded-lg p-3 text-sm text-gray-700">
+                  <p><span className="font-semibold">Address:</span> {order.delivery.address}</p>
+                  <p><span className="font-semibold">City:</span> {order.delivery.city}</p>
+                  <p><span className="font-semibold">Pincode:</span> {order.delivery.pincode}</p>
+                  <p><span className="font-semibold">Phone:</span> {order.delivery.phone}</p>
                 </div>
-              ))}
-            </div>
+              </>
+            )}
 
             {/* Details Button */}
-            <button className="mt-5 w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
-              View Details
+              
+            <button onClick={()=>{navigate(`/track?tracking_id=${order.tracking_id}`)}} className="mt-5 w-full py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition">
+              Track
             </button>
           </div>
         ))}

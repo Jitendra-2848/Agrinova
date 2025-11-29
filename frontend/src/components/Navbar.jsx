@@ -6,11 +6,27 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [time, setTime] = useState(new Date());
+  const [battery, setBattery] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     setIsLoggedIn(!!token);
+
+    // Clock update
+    const timer = setInterval(() => setTime(new Date()), 1000);
+
+    // Battery status
+    if (navigator.getBattery) {
+      navigator.getBattery().then((bat) => {
+        const updateBattery = () => setBattery(Math.floor(bat.level * 100));
+        updateBattery();
+        bat.addEventListener("levelchange", updateBattery);
+      });
+    }
+
+    return () => clearInterval(timer);
   }, []);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -35,7 +51,10 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between bg-green-800 px-6 py-3 text-white shadow-md">
       {/* Logo */}
-      <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>
+      <div
+        className="text-2xl font-bold cursor-pointer"
+        onClick={() => navigate("/")}
+      >
         AgriNova
       </div>
 
@@ -115,6 +134,12 @@ export default function Navbar() {
             isOpen ? "-rotate-45 -translate-y-2" : ""
           }`}
         ></span>
+      </div>
+
+      {/* Clock & Battery */}
+      <div className="hidden sm:flex items-center space-x-4 ml-auto text-sm font-medium">
+        <div>{time.toLocaleTimeString()}</div>
+        {battery !== null && <div>🔋 {battery}%</div>}
       </div>
     </nav>
   );

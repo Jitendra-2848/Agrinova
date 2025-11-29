@@ -74,7 +74,7 @@ const App = () => {
           element={!AuthUser ? <Signuppage /> : <Navigate to="/" />}
         />
         <Route
-          path="/msg"
+          path="/chat"
           element={AuthUser ? <ChatHome /> : <Navigate to="/" />}
         />
         <Route

@@ -81,7 +81,7 @@ const EditProduct = () => {
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6 md:p-10">
       <div className="max-w-3xl mx-auto">
         <button
-          onClick={() => navigate("/inventory")}
+          onClick={() => navigate("/manage")}
           className="flex items-center text-green-900 hover:text-green-700 font-semibold mb-8 transition"
         >
           <FiArrowLeft className="mr-2 text-xl" /> Back to Inventory

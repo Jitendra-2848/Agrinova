@@ -2,8 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+.apexcharts-tooltip {
+  z-index: 999999 !important;
+  padding: 10px !important;
+  line-height: 1.6 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-radius: 8px !important;
+  border: 1px solid #e5e7eb !important;
+  backdrop-filter: blur(6px);
+}
+
+.apexcharts-tooltip-series-group {
+  padding: 4px 0 !important;
+}
+
+.apexcharts-tooltip span {
+  display: block !important;
+}
 
 ::-webkit-scrollbar {
     display: none;
-
 }

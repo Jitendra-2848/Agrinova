@@ -134,7 +134,7 @@ const ActiveDelivery = () => {
                           Current
                         </p>
                         <p className="text-sm font-bold text-gray-800">
-                          City X - {current}
+                          {job?.products[0]?.product_city} - {Number(job.reached) || "N/A"}
                         </p>
                       </div>
 
@@ -147,10 +147,11 @@ const ActiveDelivery = () => {
                           Destination
                         </p>
                         <p className="text-sm font-bold text-gray-800">
-                          City X - {destination}
+                          {job?.products[0]?.delivery_city} - {destination}
                         </p>
                       </div>
                     </div>
+                      <p className="text-sm">Tracking ID:<span className="font-semibold px-2">{job.tracking_id}</span></p>
 
                     {/* Simple progress bar */}
                     <div className="bg-gray-50 p-3 rounded-lg">

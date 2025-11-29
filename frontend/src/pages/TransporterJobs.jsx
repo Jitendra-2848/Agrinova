@@ -145,10 +145,9 @@ const TransporterJobs = () => {
                         </div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">From</p>
                         <p className="text-sm font-bold text-slate-800">
-                          City X - {Number(job.reached) || "N/A"}
+                          {job?.products[0]?.product_city} - {Number(job.reached) || "N/A"}
                         </p>
                       </div>
-
                       {/* To */}
                       <div className="relative">
                         <div className="absolute -left-6 top-0 w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center">
@@ -156,15 +155,20 @@ const TransporterJobs = () => {
                         </div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">To</p>
                         <p className="text-sm font-bold text-slate-800">
-                          City X - {product?.delivery?.pincode || "N/A"}
+                          {job?.products[0]?.delivery_city} - {product?.delivery?.pincode || "N/A"}
                         </p>
                       </div>
                     </div>
 
                     {/* Income */}
-                    <p className="text-sm font-semibold text-slate-700">
+                    <div className="flex">
+                    <p className="text-sm px-4 font-semibold text-slate-700">
                       Income: <span className="text-green-600">₹{job.charge}</span>
                     </p>
+                    <p className="text-sm font-semibold text-slate-700">
+                      Distance: <span className="text-black">{job?.products[0]?.distance || 0} km</span>
+                    </p>
+                    </div>
 
                     {/* Stats */}
                     <div className="flex items-center gap-4 pt-4 border-t border-slate-100">

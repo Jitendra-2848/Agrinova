@@ -12,27 +12,27 @@ const contributors = [
   // 👉 Add / edit your contributors here
   {
     name: "Jitendra Prajapati",
-    role: "senior backend & Lead Developer",
-    github: "https://github.com/your-github",
+    role: "Project Developer & Full stack dev",
+    github: "https://github.com/Jitendra-2848",
   },
   {
     name: "Devansh",
-    role: "Assistant backend devloper",
-    github: "https://github.com/contributor-github",
+    role: "backend devloper",
+    github: "https://github.com/LegenD742",
   },
   {
     name: "Disha",
-    role: "Senior Frontend dev",
+    role: "Frontend dev",
     github: "https://github.com/contributor-github",
   },
   {
     name: "Sania",
-    role: "Senior Frontend dev",
-    github: "https://github.com/contributor-github",
+    role: "Frontend dev",
+    github: "https://github.com/Saniahyd1/",
   },
   {
     name: "Sumit",
-    role: "Assistant Frontend dev",
+    role: "Frontend dev",
     github: "https://github.com/contributor-github",
   },
 ];

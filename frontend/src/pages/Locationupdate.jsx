@@ -95,6 +95,7 @@ const LocationUpdate = () => {
       id: order.tracking_id,
       reachedAt: order.reached,
       transporter: order.transporter,
+      product_id:order.product_id,
       status: "Delivered",
     };
     Delivered(payload);

@@ -12,6 +12,7 @@ const productSchema = new Schema({
   special_price: { type: Number, default: null },
   Product_description : {type:String,default:"No more information."},
   Product_location:{type:String,require:true},
+  city:{type:String,default:"Unknown"},
   location_pin:{type:String,require:true},
 });
 module.exports =  model("Product", productSchema);

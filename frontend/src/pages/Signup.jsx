@@ -1,19 +1,24 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../lib/store";
 import { User, Mail, Lock, UserPlus, Sprout, Store, Truck } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Signup() {
-  const [role, setRole] = useState("farmer");
+  const [role, setRole] = useState("vendor");
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const { register } = useAuthStore();
-
+  const navigate = useNavigate();
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    register({ ...formData, role });
+    let res = register({ ...formData, role });
+    if(res.ok){
+      toast.success("Register successfully!");
+    }
+    navigate("/login")
   };
 
   const roleIcon = {
@@ -23,7 +28,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-br from-green-50 via-green-100 to-green-200 flex flex-col md:flex-row items-center justify-center px-4 md:px-10 font-masti overflow-hidden">
+    <div className="relative min-h-screen w-full bg-gradient-to-br from-green-50 via-green-100 to-green-200 flex flex-col md:flex-row items-center justify-center px-4 md:px-10 overflow-hidden">
 
       {/* Floating BG decor */}
       <div className="absolute -top-20 -left-20 w-64 h-64 bg-green-300/40 blur-[80px] rounded-full"></div>
@@ -68,7 +73,7 @@ export default function Signup() {
 
           {/* Compact Role Selector */}
           <div className="flex justify-between gap-2 mb-6">
-            {["farmer", "vendor", "transporter"].map((r) => (
+            {["vendor","farmer", "transporter"].map((r) => (
               <button
                 key={r}
                 onClick={() => setRole(r)}

@@ -1,7 +1,7 @@
-const shop = require("../models/shop.js");
-const Track = require("../models/track.js");
+  const shop = require("../models/shop");
+  const Track = require("../models/track");
 
-// ✅ Get full tracking details using tracking_id
+//    Get full tracking details using tracking_id
  const tracking = async (req, res) => {
   try {
     const {id} = req.body;
@@ -19,14 +19,13 @@ const Track = require("../models/track.js");
   }
 };
 
-// ✅ Get all tracking info for a user
+//    Get all tracking info for a user
  const getAllTracks = async (req, res) => {
   try {
     const { id } = req.body;
     console.log(req.body);
     console.log(id);
-    const detail = await Track.find({ user: id })
-      .select("tracking_id reached status");
+    const detail = await Track.find({ user: id });
     console.log(detail)
     return res.status(200).json({ tracks: detail });
   } catch (error) {
@@ -35,7 +34,7 @@ const Track = require("../models/track.js");
   }
 };
 
-// ✅ Delete a tracking record using its ID
+//    Delete a tracking record using its ID
  const deleteTrack = async (req, res) => {
   try {
     const { id } = req.body;
@@ -49,8 +48,18 @@ const Track = require("../models/track.js");
   }
 };
 
+const vieworder = async(req,res)=>{
+  try {
+    const data = await shop.find({farmer:req.user});
+    return res.status(200).json({data:data});
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 module.exports = {
   tracking,
   getAllTracks,
   deleteTrack,
+  vieworder,
 }
