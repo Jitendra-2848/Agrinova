@@ -8,6 +8,7 @@ const trackSchema = new Schema({
   transporter:{type:Schema.Types.ObjectId,default:null,ref:"User"},
   reached: { type: String },
   charge:{type:Number,required:true},
+  product:{type:Array,require:true},
   // distance_cover:{type:Number,default:0},
   total_distance:{type:Number,default:0},
   status: { type: String, enum: ["Delivered", "Delivering", "Shipping","Placed"] }

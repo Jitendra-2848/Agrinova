@@ -9,9 +9,6 @@ const Orders = () => {
     vieworder(); // Fetch orders on mount
   }, []);
   const navigate = useNavigate()
-  useEffect(() => {
-    console.log(orders_farmer);
-  }, [orders_farmer]);
 
   return (
     <div className="p-5 md:p-10 max-w-7xl mx-auto">

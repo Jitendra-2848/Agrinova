@@ -25,7 +25,7 @@ export const useAuthStore = create((set, get) => ({
   userproduct: [],
   Allproduct: [],
   buy_product: null,
-  
+
   // NEGOTIATION STATES
   negotiation_product: null,
   negotiated_deal: null,
@@ -153,7 +153,7 @@ export const useAuthStore = create((set, get) => ({
   respondToOffer: async (data) => {
     try {
       const res = await api.post("/api/message/offer/respond", data);
-      
+
       if (data.action === "accept") {
         set((state) => ({
           Chats: [...state.Chats, res.data.message],
@@ -170,7 +170,7 @@ export const useAuthStore = create((set, get) => ({
           ),
         }));
       }
-      
+
       return res.data;
     } catch (error) {
       console.error("respondToOffer error:", error);
@@ -227,32 +227,29 @@ export const useAuthStore = create((set, get) => ({
 
   // Start chat with a specific user (for navigation from product page)
   startChatWithUser: async (userId) => {
-  try {
-    console.log("startChatWithUser called with:", userId);
-    const res = await api.get(`/api/auth/user/${userId}`);
-    
-    console.log("API response:", res.data);
-    
-    // ✅ FIX: Check both possible response structures
-    const user = res.data.user || res.data;
-    
-    if (!user || !user._id) {
-      console.error("Invalid user data received:", user);
-      throw new Error("User not found");
+    try {
+      const res = await api.get(`/api/auth/user/${userId}`);
+
+
+      // ✅ FIX: Check both possible response structures
+      const user = res.data.user || res.data;
+
+      if (!user || !user._id) {
+        console.error("Invalid user data received:", user);
+        throw new Error("User not found");
+      }
+
+      set({ currentChatuser: user });
+
+      // Get messages for this user
+      await get().getmsg(userId);
+
+      return user;
+    } catch (error) {
+      console.error("startChatWithUser error:", error);
+      throw error;
     }
-    
-    console.log("Setting currentChatuser to:", user);
-    set({ currentChatuser: user });
-    
-    // Get messages for this user
-    await get().getmsg(userId);
-    
-    return user;
-  } catch (error) {
-    console.error("startChatWithUser error:", error);
-    throw error;
-  }
-},
+  },
 
   // Get products by farmer ID
   getProductsByFarmer: async (farmerId) => {
@@ -305,16 +302,10 @@ export const useAuthStore = create((set, get) => ({
   setNegotiatedDeal: (price, quantity, product) => {
     set({
       negotiated_deal: {
-        price,
-        quantity,
-        product,
-        total: price * quantity,
-      },
-      buy_product: {
-        ...product,
-        negotiated_price: price,
-        negotiated_quantity: quantity,
-      },
+        negotiatedPrice: price,
+        quantity: quantity,
+        product: product
+      }
     });
   },
 
@@ -325,13 +316,18 @@ export const useAuthStore = create((set, get) => ({
   // -----------------------------
 
   AddProduct: async (data) => {
+    const id = toast.loading("Adding...");
     try {
       const res = await api.post("/api/product/add", data);
       toast.success(res.data.message);
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong...");
+    } finally {
+      toast.dismiss(id);
     }
   },
+
 
   getproduct: async () => {
     try {
@@ -383,7 +379,7 @@ export const useAuthStore = create((set, get) => ({
       console.log(error);
     }
   },
-  updateprofile:async(data)=>{
+  updateprofile: async (data) => {
     try {
       await api.put("/api/auth/profileupdate", data);
     } catch (error) {
@@ -402,6 +398,7 @@ export const useAuthStore = create((set, get) => ({
       set({ negotiated_deal: null, negotiation_product: null });
       return res.data;
     } catch (error) {
+      toast.error(error.response.data.message);
       console.log(error);
       throw error;
     }
@@ -409,9 +406,9 @@ export const useAuthStore = create((set, get) => ({
 
   setBuyProduct: (product) => set({ buy_product: product }),
 
-  RemoveBuy: () => set({ 
-    buy_product: null, 
-    Tracking_id: null, 
+  RemoveBuy: () => set({
+    buy_product: null,
+    Tracking_id: null,
     trackingData: null,
     negotiated_deal: null,
     negotiation_product: null,

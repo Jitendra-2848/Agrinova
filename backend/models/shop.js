@@ -11,6 +11,7 @@ const paymentSchema = new Schema({
   vendor: { type: Schema.Types.ObjectId, required: true },
   productid:{ type: Schema.Types.ObjectId, required: true },
   quantity:{type:Number,required:true},
+  price:{type:Object,require:true},
   distance:{type:Number,default:0},
   tracking_id: { type: String, required: true },
   status: { type: String, enum: ["Paid", "Pending", "Bad debt"] },

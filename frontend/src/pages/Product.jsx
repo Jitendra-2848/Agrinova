@@ -133,7 +133,7 @@ const Product = () => {
 
               <div className="flex items-center gap-2 text-green-600 font-medium">
                 <FiCheck size={20} />
-                Inclusive of all taxes • Free delivery
+                Inclusive of all taxes
               </div>
             </div>
 

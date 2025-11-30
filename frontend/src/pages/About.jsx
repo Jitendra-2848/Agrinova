@@ -254,7 +254,8 @@ const About = () => {
           <div className="flex items-center gap-2">
             <FiUsers className="text-green-600" />
             <h2 className="text-2xl font-bold text-gray-900">
-              Contributors
+              {/* Contributors  */}
+              Devloper
             </h2>
           </div>
           <p className="text-gray-700 text-sm">
@@ -291,6 +292,7 @@ const About = () => {
           <div className="mt-4 text-xs text-gray-400 flex items-center gap-1">
             <FiGlobe />
             <span>Agrinova · GreenLogistic Express · Unified Agri Marketplace</span>
+            <span>All the details and product here are fake its just a project so don't pay attention to any fraudlet activity.</span>
           </div>
             <p>💠 Project with TEN Tech</p>
         </section>

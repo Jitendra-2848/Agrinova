@@ -4,7 +4,7 @@ import ReactApexChart from "react-apexcharts";
 import AgriMarketNavbar from "./Navbar";
 import RecentActivity from "./Recent";
 import { useAuthStore } from "../lib/store";
-
+import Footer from "./Footer";
 const MONTHS = [
   "Jan",
   "Feb",
@@ -407,7 +407,7 @@ export default function DashboardMain() {
             },
             {
               icon: "M13 7h8m0 0v8m0-8l-8 8-4-4-6 6",
-              val: `${stats.distance} km`,
+              val: `${stats.distance.toFixed(0)} km`,
               label: "Distance",
               c: "orange",
             },
@@ -686,8 +686,7 @@ export default function DashboardMain() {
             ))}
           </div>
         </div>
-
-        <RecentActivity />
+        <Footer />
       </main>
     </div>
   );

@@ -7,21 +7,45 @@ const axios = require("axios");
 const addProduct = async (req, res) => {
   try {
     console.log(req.body);
-    const { Product_name, Product_price, Product_status, Product_image, Product_description, Product_Qty, Product_location, location_pin } = req.body;
+    const { 
+      Product_name, 
+      Product_price, 
+      Product_status, 
+      Product_image, 
+      Product_description, 
+      Product_Qty, 
+      Product_location, 
+      location_pin 
+    } = req.body;
+
+    // 1. Upload Image to Cloudinary
     const uploadResult = await cloud.uploader.upload(Product_image);
-    uploadedPost = uploadResult.secure_url;
-    console.log(uploadedPost)
-    // devansh you have to do this 
-    //const initial_city = your_function(location_pin);
-    const details = await axios.get(
-      `https://api.postalpincode.in/pincode/${382405}`
-    );
-    const city = details.data[0].PostOffice[0].District;
-    const initial_city = "city";
+    const uploadedPost = uploadResult.secure_url;
+    console.log("Image Uploaded:", uploadedPost);
+
+    // 2. Fetch City from Pincode
+    let city = "Unknown";
+    
+    try {
+      const details = await axios.get(`https://api.postalpincode.in/pincode/${location_pin}`);
+      
+      // Check if API returned valid data
+      if (details.data[0].Status === "Success") {
+        city = details.data[0].PostOffice[0].District;
+      } else {
+        // API returned "Error" status (Invalid Pincode)
+        return res.status(400).json({ message: "Invalid Pincode provided. Please check your address." });
+      }
+    } catch (apiError) {
+      console.error("Pincode API Error:", apiError.message);
+      return res.status(400).json({ message: "Could not verify pincode. Please try again." });
+    }
+
+    // 3. Create Product Record
     const record = new Product({
-      userId: req.user,       // comes = require( verifyToken
+      userId: req.user,       // comes from verifyToken
       Product_name,
-      city: initial_city,
+      city: city,             // Fetched City
       Product_price,
       Product_status,
       Product_Qty,
@@ -30,18 +54,21 @@ const addProduct = async (req, res) => {
       Product_image: uploadedPost,
       Product_description
     });
-    const data = await farmer.findOneAndUpdate({ user: req.user }, {
-      $inc: {
-        Products_listed: 1,
-      }
-    })
 
+    // 4. Update Farmer Stats
+    await farmer.findOneAndUpdate(
+      { user: req.user }, 
+      { $inc: { Products_listed: 1 } }
+    );
+
+    // 5. Save Product
     await record.save();
 
-    return res.status(200).json({ message: "Product Added!" });
+    return res.status(200).json({ message: "Product Added Successfully!", product: record });
+
   } catch (error) {
-    console.log(error.message);
-    return res.status(500).json({ message: "Something went wrong!", error: error });
+    console.log("Add Product Error:", error.message);
+    return res.status(500).json({ message: "Something went wrong!", error: error.message });
   }
 };
 

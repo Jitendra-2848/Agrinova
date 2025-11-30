@@ -240,7 +240,6 @@ export default function BuyerDashboard() {
     a.download = "purchases_" + year + ".csv";
     a.click();
   };
-  console.log(overview_detail)
 
   if (loading) {
     return (
@@ -255,12 +254,12 @@ export default function BuyerDashboard() {
     { icon: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z", val: stats.purchases, label: "Purchases", c: "blue" },
     { icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1", val: "₹" + stats.spent.toLocaleString("en-IN"), label: "Total Spent", c: "purple" }
   ];
-    console.log(AuthUser);
 
   let actionBtns = [
     { label: "Browse", path: "/Product", bg: "bg-green-600 hover:bg-green-700 text-white", icon: "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" },
     { label: "Orders", path: "/MyOrder", bg: "bg-blue-600 hover:bg-blue-700 text-white", icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" },
-    { label: "Track", path: "/track", bg: "bg-gray-100 hover:bg-gray-200 text-gray-800", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" }
+    { label: "Messages", path: "/chat", bg: "bg-gray-100 hover:bg-gray-200 text-gray-800", icon: "M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" },
+    { label: "Track", path: "/track", bg: "bg-gray-100 hover:bg-gray-200 text-gray-800", icon: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z" },
   ];
 
   let maxSpent = Math.max(...filtered.spent);
@@ -398,7 +397,7 @@ export default function BuyerDashboard() {
 
         <div className="bg-white rounded-2xl shadow-sm border p-5">
           <h2 className="font-bold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {actionBtns.map((btn, i) => (
               <button 
                 key={i} 
