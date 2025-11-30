@@ -145,17 +145,6 @@ const People = ({ onSelectUser }) => {
           >
             All Chats
           </button>
-          <button
-            onClick={() => setActiveTab("offers")}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 ${
-              activeTab === "offers"
-                ? "bg-amber-100 text-amber-700"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            <Tag className="w-3.5 h-3.5" />
-            Offers
-          </button>
         </div>
       </div>
 
@@ -247,7 +236,7 @@ const People = ({ onSelectUser }) => {
       {Authtype === "vendor" && (
         <div className="p-4 border-t border-gray-100">
           <button
-            onClick={() => navigate("/products")}
+            onClick={() => navigate("/product")}
             className="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-medium text-sm hover:shadow-lg hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
           >
             <Tag className="w-4 h-4" />

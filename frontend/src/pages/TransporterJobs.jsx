@@ -166,7 +166,7 @@ const TransporterJobs = () => {
                       Income: <span className="text-green-600">₹{job.charge}</span>
                     </p>
                     <p className="text-sm font-semibold text-slate-700">
-                      Distance: <span className="text-black">{job?.products[0]?.distance || 0} km</span>
+                      Distance: <span className="text-black">{job?.products[0]?.distance.toFixed(0) || 0} km</span>
                     </p>
                     </div>
 
