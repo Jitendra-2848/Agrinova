@@ -5,7 +5,7 @@ const track = require("../models/track.js");
 const farmer = require("../models/user_detail/farmer.js");
 const vendor = require("../models/user_detail/vendor.js");
 const getPincodeDistance = require('./distance.js'); 
-
+const axios = require("axios");
 const paymentSuccess = async (req, res) => {
   console.log(req.body)
   // Track what we've created/modified for rollback
@@ -103,7 +103,10 @@ const paymentSuccess = async (req, res) => {
     const currentMonthName = now.toLocaleString('default', { month: 'long' });
     const currentYear = now.getFullYear();
     const monthIdentifier = `${currentMonthName} ${currentYear}`;
-
+    const city = await axios.get(
+          `https://api.postalpincode.in/pincode/${delivery.pincode}`
+        );
+    const City_data = city.data[0].PostOffice[0].District;
     // ========== STEP 4: Create Shop Record ==========
     const shopRecord = new shop({
       farmer: initialproduct.userId,
@@ -114,11 +117,11 @@ const paymentSuccess = async (req, res) => {
       tracking_id: trackingId,
       status: "Paid", 
       price: payment,
-      city: delivery.city || initialproduct.city || "unknown",
+      city: initialproduct.city || "unknown",
       delivery: {
         address: delivery.address,
         pincode: delivery.pincode,
-        city: delivery.city || "unknown"
+        city: City_data || "unknown"
       }
     });
 

@@ -93,6 +93,7 @@ const find = async (req, res) => {
               distance: p.distance,
               product_city: product?.city || "unknown_x",
               delivery_city: p.delivery?.city || "unknown_y",
+              delivery_pincode: p.delivery?.pincode || "unknown_y",
             };
           })
         );

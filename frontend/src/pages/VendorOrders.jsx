@@ -10,7 +10,6 @@
     const [loading, setLoading] = useState(true);
     const [generatingInvoice, setGeneratingInvoice] = useState(null);
     const navigate = useNavigate();
-    console.log(Myorder)
     useEffect(() => {
       if (AuthUser?._id) {
         Checkorder(AuthUser._id).finally(() => setLoading(false));

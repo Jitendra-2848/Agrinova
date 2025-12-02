@@ -9,31 +9,10 @@ import {
 } from "react-icons/fi";
 
 const contributors = [
-  // 👉 Add / edit your contributors here
   {
     name: "Jitendra Prajapati",
     role: "Project Developer & Full stack dev",
     github: "https://github.com/Jitendra-2848",
-  },
-  {
-    name: "Devansh",
-    role: "backend devloper",
-    github: "https://github.com/LegenD742",
-  },
-  {
-    name: "Disha",
-    role: "Frontend dev",
-    github: "https://github.com/contributor-github",
-  },
-  {
-    name: "Sania",
-    role: "Frontend dev",
-    github: "https://github.com/Saniahyd1/",
-  },
-  {
-    name: "Sumit",
-    role: "Frontend dev",
-    github: "https://github.com/contributor-github",
   },
 ];
 
@@ -292,9 +271,7 @@ const About = () => {
           <div className="mt-4 text-xs text-gray-400 flex items-center gap-1">
             <FiGlobe />
             <span>Agrinova · GreenLogistic Express · Unified Agri Marketplace</span>
-            <span>All the details and product here are fake its just a project so don't pay attention to any fraudlet activity.</span>
           </div>
-            <p>💠 Project with TEN Tech</p>
         </section>
       </div>
     </div>

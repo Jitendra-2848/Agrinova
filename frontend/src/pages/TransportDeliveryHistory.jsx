@@ -96,18 +96,16 @@ const DeliveryHistory = () => {
 
             {!loading &&
               history.map((order,index) => {
-                // const product = order.products?.[index];
                 const amount = order?.charge || 0;
                 const distance = order?.distance_cover;
                 const pickup = order?.delivery?.pickup || "Unknown";
                 const drop = order?.delivery?.pincode || "Unknown";
-                // console.log(product)
                 return (
                   <tr key={index} className="border-b hover:bg-gray-300 transition hover:cursor-pointer" onClick={()=>{navigate(`/track?tracking_id=${order.tracking_id}`)}}>
                     <td className="px-6 py-4">{order.tracking_id.slice(-6).toUpperCase()}</td>
                     <td className="px-6 py-4">{distance} km</td>
                     <td className="px-6 py-4">₹{amount}</td>
-                   <td className="px-6 py-4">{order.date ? new Date(order.date).toLocaleDateString() : "N/A"}</td>
+                   <td className="px-6 py-4">{order.date ? new Date(order.date).toLocaleDateString("en-IN") : "N/A"}</td>
                     <td className="px-6 py-4 font-semibold text-green-600">Delivered</td>
                   </tr>
                 );

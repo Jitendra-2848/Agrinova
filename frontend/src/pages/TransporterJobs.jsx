@@ -10,11 +10,9 @@ import {
   FiTruck,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
-
 const TransporterJobs = () => {
   const navigate = useNavigate();
   const { jobdata, findjob, acceptjob } = useAuthStore();
-
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [accepting, setAccepting] = useState(null);
@@ -32,7 +30,6 @@ const TransporterJobs = () => {
         setLoading(false);
       }
     };
-
     loadJobs();
   }, []);
 
@@ -46,6 +43,7 @@ const TransporterJobs = () => {
     try {
       setAccepting(job.tracking_id);
       await acceptjob(job);
+      setJobs((prev) => prev.filter((j) => j.tracking_id !== job.tracking_id));
       toast.success("Job accepted!");
     } catch (err) {
       console.error(err);
@@ -54,7 +52,6 @@ const TransporterJobs = () => {
       setAccepting(null);
     }
   };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -155,7 +152,7 @@ const TransporterJobs = () => {
                         </div>
                         <p className="text-[10px] text-slate-400 font-bold uppercase">To</p>
                         <p className="text-sm font-bold text-slate-800">
-                          {job?.products[0]?.delivery_city} - {product?.delivery?.pincode || "N/A"}
+                          {job?.products[0]?.delivery_city} - {job?.products[0]?.delivery_pincode || "N/A"}
                         </p>
                       </div>
                     </div>

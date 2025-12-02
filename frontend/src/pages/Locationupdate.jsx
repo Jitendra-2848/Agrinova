@@ -230,7 +230,7 @@ const LocationUpdate = () => {
                     {/* Destination: hide pincode visually, still used internally */}
                     <p className="text-gray-600">
                       Destination:{" "}
-                      <span className="font-medium">City X,{order.products[0].delivery.pincode}</span>
+                      <span className="font-medium">{order.products[0].delivery.city || order.products[0].delivery_city || "Unknown"}, {order.products[0].delivery.pincode}</span>
                     </p>
                     <p className="text-gray-600">
                       Tracking ID:{" "}

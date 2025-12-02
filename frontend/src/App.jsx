@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import Intro from "./Homepage/Transporter";
-import Vendor from "./Homepage/Vendor";
-import Farmer from "./Homepage/Farmer";
+import Intro from "./component/Transporter";
+import Vendor from "./component/Vendor";
+import Farmer from "./component/Farmer";
 import { useAuthStore } from "./lib/store";
 import { Toaster } from "react-hot-toast";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";

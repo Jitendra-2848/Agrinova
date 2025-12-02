@@ -1,6 +1,5 @@
   const shop = require("../models/shop");
   const Track = require("../models/track");
-
 //    Get full tracking details using tracking_id
  const tracking = async (req, res) => {
   try {
@@ -18,7 +17,6 @@
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 //    Get all tracking info for a user
  const getAllTracks = async (req, res) => {
   try {
@@ -33,7 +31,6 @@
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 //    Delete a tracking record using its ID
  const deleteTrack = async (req, res) => {
   try {
@@ -47,7 +44,6 @@
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-
 const vieworder = async(req,res)=>{
   try {
     const data = await shop.find({farmer:req.user});
@@ -56,7 +52,6 @@ const vieworder = async(req,res)=>{
     console.log(error);
   }
 }
-
 module.exports = {
   tracking,
   getAllTracks,
