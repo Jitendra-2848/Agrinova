@@ -76,7 +76,9 @@ app.use(
 app.get("/", (req, res) => {
   res.send("AgriNova Backend Running");
 });
-
+app.use("/api/",(req,res)=>{
+  res.send("running !!!");
+})
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
 app.use("/api/cart", cartRoutes);
