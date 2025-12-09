@@ -25,7 +25,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: ["https://agrinovafrontend.vercel.app"],
+    origin: `${process.env.FRONTEND_URL}`,
     credentials: true,
   },
 });
@@ -68,7 +68,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ["https://agrinovafrontend.vercel.app"],
+    origin: `${process.env.FRONTEND_URL}`,
     credentials: true,
   })
 );
@@ -76,9 +76,7 @@ app.use(
 app.get("/", (req, res) => {
   res.send("AgriNova Backend Running");
 });
-app.use("/api/",(req,res)=>{
-  res.send("running !!!");
-})
+
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
 app.use("/api/cart", cartRoutes);
@@ -88,7 +86,9 @@ app.use("/api/shop", shopRoutes);
 app.use("/api/track", trackRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/user_detail", user_detail);
-
+app.use("/api/check",(req,res)=>{
+  res.send("running !!!");
+})
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server + Socket.IO running on port ${PORT}`);
