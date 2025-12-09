@@ -5,8 +5,8 @@ const cloud = require("../middlewares/cloud.js")
 //Cookie options (secure for production)
 const cookieOptions = {
   httpOnly: true,
-  secure: false,   
-  sameSite: "lax",
+  secure: true,   
+  sameSite: "None",
   maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 const VendorDetail = require("../models/user_detail/vendor")
@@ -86,23 +86,18 @@ const loginUser = async (req, res) => {
     console.log("hii");
     console.log(user)
     if (!user) {
-      // return res.status(404).json({ error: "User not found" });
+      return res.status(404).json({ error: "User not found" });
     }
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
-
-    //Generate JWT
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
-
-    //   Store in secure cookie instead of localStorage
     res.cookie("token", token, cookieOptions);
-
     return res.json({
       message: "Login successful",
       user: {
