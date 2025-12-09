@@ -11,19 +11,11 @@ const updateTrack = async (req, res) => {
     if (transporter != req.user) {
       return res.status(500).json({ message: "Chalaki nhi mittar jo tera kaam hai vo kar dusro ki chize change mat kar." });
     }
-
-
-
-    //here you have to update the distance also DEVANASH   
-
-
     const updated = await Track.findOneAndUpdate(
       { tracking_id: id },
       {
         reached: reachedAt, status: "Delivering",
-        // distance_cover:"Here devansh"
       }
-
     );
     await updated.save();
     return res.status(200).json({
@@ -284,7 +276,6 @@ module.exports = {
   updateTrack,
   delivered,
   rejected,
-  aiTest,
   accepting,
   find,
   Activejobs,
