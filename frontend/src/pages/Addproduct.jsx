@@ -7,10 +7,10 @@ import toast from "react-hot-toast";
 const AddProduct = ({ isSubmitting = false }) => {
   const [product, setProduct] = useState({
     Product_name: "",
-    Product_price: "50",
-    Product_Qty: "22000",
-    Product_location: "Dukan 5,Damru bazzar,Ganesh chowk,narol court,narol,Ahmedabad",
-    location_pin: "382405",
+    Product_price: "",
+    Product_Qty: "",
+    Product_location: "",
+    location_pin: "",
     Product_description: "",
     Product_status: "In-Stock",
     Product_image: "",
