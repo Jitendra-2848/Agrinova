@@ -33,35 +33,29 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {});
 });
 
-// Cached DB connection
-let isConnected = false;
-
-const connectDB = async () => {
-  if (isConnected) return;
-  await mongoose.connect(process.env.MONGO_URI, {
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 3000,
-    bufferCommands: false
-  });
-  isConnected = true;
-};
-
-connectDB();
-
-mongoose.connection.on("disconnected", () => { isConnected = false; });
+// Connect to MongoDB once at startup
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("DB connected"))
+  .catch((err) => console.error("DB error:", err.message));
 
 app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 
-// DB middleware
+// Reconnect middleware
 app.use(async (req, res, next) => {
-  if (!isConnected) await connectDB();
+  if (mongoose.connection.readyState !== 1) {
+    try {
+      await mongoose.connect(process.env.MONGO_URI);
+    } catch (err) {
+      return res.status(500).json({ error: "DB connection failed" });
+    }
+  }
   next();
 });
 
 app.get("/", (req, res) => res.send("OK"));
-app.get("/api/check", (req, res) => res.json({ db: isConnected }));
+app.get("/api/check", (req, res) => res.json({ db: mongoose.connection.readyState === 1 }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
