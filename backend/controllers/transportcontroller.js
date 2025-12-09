@@ -1,4 +1,3 @@
-const { api } = require("../utils/transporter.js");
 const Track = require("../models/track.js");
 const shop = require("../models/shop.js");
 const transporter_data = require("../models/user_detail/transporter.js")
@@ -220,31 +219,6 @@ const history = async (req, res) => {
   }
 
 }
-const aiTest = async (req, res) => {
-  try {
-    const result = await api({
-      apiKey: process.env.API_KEY,
-      systemPrompt: `
-        Give me the exact driving distance (as per Google Maps) 
-        between the following two Indian pincodes: [PINCODE_1] and [PINCODE_2].
-
-        Respond only in JSON:
-        {
-          "pincode_from": "[PINCODE_1]",
-          "pincode_to": "[PINCODE_2]",
-          "distance": "X km"
-        }
-      `,
-      content: { from: 382405, to: 400001 }
-    });
-
-    return res.status(200).json({ ai_result: result });
-
-  } catch (error) {
-    console.error("aiTest error:", error.message);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-};
 const Activejobs = async (req, res) => {
   try {
     const tracks = await Track.find({ transporter: req.user }).lean();
