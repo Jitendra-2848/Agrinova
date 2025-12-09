@@ -1,9 +1,10 @@
 require("dotenv").config();
 const express = require("express");
-const dotenv = require("dotenv");
 const cors = require("cors");
-const mongo = require("mongoose");
+const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const authRoutes = require("./routes/authroutes.js");
 const distanceRoutes = require("./routes/distanceroute.js");
@@ -15,67 +16,52 @@ const trackRoutes = require("./routes/trackroutes.js");
 const transportRoutes = require("./routes/transportroute.js");
 const user_detail = require("./routes/detail");
 
-dotenv.config();
-
 const app = express();
-
-const http = require("http");
 const server = http.createServer(app);
 
-const { Server } = require("socket.io");
 const io = new Server(server, {
-  cors: {
-    origin: `${process.env.FRONTEND_URL}`,
-    credentials: true,
-  },
+  cors: { origin: process.env.FRONTEND_URL, credentials: true }
 });
 
 app.set("io", io);
 
 io.on("connection", (socket) => {
-  console.log("🔥 User connected:", socket.id);
-
-  socket.on("join_room", (roomId) => {
-    socket.join(roomId);
-    console.log(`➡️ User ${socket.id} joined room: ${roomId}`);
-  });
-
-  socket.on("leave_room", (roomId) => {
-    socket.leave(roomId);
-    console.log(`⬅️ User ${socket.id} left room: ${roomId}`);
-  });
-
-  socket.on("typing", ({ roomId, userId }) => {
-    socket.to(roomId).emit("typing", { userId });
-  });
-
-  socket.on("stop_typing", ({ roomId, userId }) => {
-    socket.to(roomId).emit("stop_typing", { userId });
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
-  });
+  socket.on("join_room", (roomId) => socket.join(roomId));
+  socket.on("leave_room", (roomId) => socket.leave(roomId));
+  socket.on("typing", (data) => socket.to(data.roomId).emit("typing", data));
+  socket.on("stop_typing", (data) => socket.to(data.roomId).emit("stop_typing", data));
+  socket.on("disconnect", () => {});
 });
 
-mongo
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected..."))
-  .catch((e) => console.error("Mongo error:", e));
+// Cached DB connection
+let isConnected = false;
 
-app.use(express.json({ limit: "10mb" }));
+const connectDB = async () => {
+  if (isConnected) return;
+  await mongoose.connect(process.env.MONGO_URI, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 3000,
+    bufferCommands: false
+  });
+  isConnected = true;
+};
+
+connectDB();
+
+mongoose.connection.on("disconnected", () => { isConnected = false; });
+
+app.use(express.json({ limit: "5mb" }));
 app.use(cookieParser());
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 
-app.use(
-  cors({
-    origin: `${process.env.FRONTEND_URL}`,
-    credentials: true,
-  })
-);
-
-app.get("/", (req, res) => {
-  res.send("AgriNova Backend Running");
+// DB middleware
+app.use(async (req, res, next) => {
+  if (!isConnected) await connectDB();
+  next();
 });
+
+app.get("/", (req, res) => res.send("OK"));
+app.get("/api/check", (req, res) => res.json({ db: isConnected }));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
@@ -86,12 +72,8 @@ app.use("/api/shop", shopRoutes);
 app.use("/api/track", trackRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/user_detail", user_detail);
-app.use("/api/check",(req,res)=>{
-  res.send("running !!!");
-})
+
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server + Socket.IO running on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Port ${PORT}`));
 
 module.exports = app;
