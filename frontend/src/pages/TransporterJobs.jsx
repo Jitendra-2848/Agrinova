@@ -173,7 +173,7 @@ const TransporterJobs = () => {
                         <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                           <FiBox className="text-blue-600" size={16} />
                         </div>
-                        <span>{totalItems} {totalItems > 1 ? "Items" : "Item"}</span>
+                        <span>{totalItems} kg</span>
                       </div>
 
                       <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">

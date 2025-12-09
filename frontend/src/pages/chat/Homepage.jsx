@@ -828,7 +828,7 @@ const OfferCard = ({
           <p className="font-semibold text-gray-900 truncate text-sm">
             {offer.productName || "Product"}
           </p>
-          <p className="text-xs text-gray-500">Qty: {quantity}</p>
+          <p className="text-xs text-gray-500">Qty: {quantity} kg</p>
         </div>
         <span
           className={`px-2 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 border ${getStatusColor()}`}
@@ -1108,7 +1108,7 @@ const BargainModal = ({
               {/* Quantity */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Quantity (units)
+                  Quantity (kg)
                 </label>
                 <div className="flex items-center gap-3">
                   <button
@@ -1139,7 +1139,7 @@ const BargainModal = ({
                   </button>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">
-                  Available: {maxQty} units
+                  Available: {maxQty} kg
                 </p>
               </div>
 

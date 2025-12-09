@@ -87,7 +87,7 @@ export default function BuyerDashboard() {
     }
     return [
       { name: "Spent (₹)", data: filtered.spent },
-      { name: "Products", data: filtered.items }
+      { name: "Items (kg)", data: filtered.items }
     ];
   }, [chart, filtered]);
 
@@ -201,7 +201,7 @@ export default function BuyerDashboard() {
         y: {
           formatter: (v, opts) => {
             if (opts.seriesIndex === 0) return "₹" + (v || 0).toLocaleString("en-IN");
-            return v + " items";
+            return v + " kg";
           }
         }
       },
@@ -229,7 +229,7 @@ export default function BuyerDashboard() {
   }, [chart, filtered, isCircle]);
 
   const download = () => {
-    let csv = "Month,Spent,Products\n";
+    let csv = "Month,Spent,Items (in kg)\n";
     for (let i = 0; i < filtered.months.length; i++) {
       csv += filtered.months[i] + "," + filtered.spent[i] + "," + filtered.items[i] + "\n";
     }
@@ -251,7 +251,7 @@ export default function BuyerDashboard() {
 
   let statCards = [
     { icon: "M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z", val: stats.active, label: "Active Orders", c: "green" },
-    { icon: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z", val: stats.purchases, label: "Purchases", c: "blue" },
+    { icon: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z", val: stats.purchases + " kg", label: "Purchase", c: "blue" },
     { icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1", val: "₹" + stats.spent.toLocaleString("en-IN"), label: "Total Spent", c: "purple" }
   ];
 
@@ -331,7 +331,7 @@ export default function BuyerDashboard() {
             </span>
             <span className="flex items-center gap-1.5 px-2 py-1 bg-purple-50 rounded border border-purple-100">
               <span className="w-2 h-2 rounded-full bg-purple-500" />
-              <b className="text-purple-600">{filtered.totalItems}</b> Products
+              <b className="text-purple-600">{filtered.totalItems}</b> Items (in kg)
             </span>
           </div>
 
@@ -367,7 +367,7 @@ export default function BuyerDashboard() {
                   <tr>
                     <th className="px-4 py-2 text-left text-gray-600">Month</th>
                     <th className="px-4 py-2 text-right text-green-600">Spent</th>
-                    <th className="px-4 py-2 text-right text-purple-600">Products</th>
+                    <th className="px-4 py-2 text-right text-purple-600">Items (kg)</th>
                   </tr>
                 </thead>
                 <tbody>

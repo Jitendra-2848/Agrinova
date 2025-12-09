@@ -216,7 +216,7 @@ const EditProduct = () => {
                     htmlFor="Product_price"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Price (₹)
+                    ₹Price (per kg)
                   </label>
                   <input
                     id="Product_price"
@@ -256,7 +256,7 @@ const EditProduct = () => {
                     htmlFor="Product_Qty"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Quantity in stock
+                    Quantity(kg) in stock
                   </label>
                   <input
                     id="Product_Qty"

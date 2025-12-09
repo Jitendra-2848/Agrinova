@@ -253,7 +253,7 @@ const Buy = () => {
                     <span className="text-xl font-bold text-gray-900">
                       {currentQty}
                     </span>
-                    <span className="text-gray-500">units</span>
+                    <span className="text-gray-500">kg</span>
                     <span className="text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-full ml-2">
                       Fixed (Negotiated)
                     </span>
@@ -282,7 +282,7 @@ const Buy = () => {
               </div>
               <p className="text-sm text-gray-500 flex items-center gap-2">
                 <FiPackage className="text-emerald-600" />
-                {maxQty} units available in stock
+                {maxQty} kg available in stock
               </p>
             </div>
 

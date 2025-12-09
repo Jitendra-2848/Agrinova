@@ -98,7 +98,7 @@
                     </div>
 
                     <div className="space-y-3 mb-4">
-                      <div className="flex items-center justify-between text-sm"><span className="text-gray-500 flex items-center gap-1"><FiPackage size={14} /> Quantity</span><span className="font-semibold text-gray-800">{quantity} units</span></div>
+                      <div className="flex items-center justify-between text-sm"><span className="text-gray-500 flex items-center gap-1"><FiPackage size={14} /> Quantity</span><span className="font-semibold text-gray-800">{quantity} kg</span></div>
                       <div className="flex items-center justify-between text-sm"><span className="text-gray-500 flex items-center gap-1"><FiMapPin size={14} /> Location</span><span className="font-semibold text-gray-800">{order.reached || "Processing"}</span></div>
                       <div className="flex items-center justify-between text-sm"><span className="text-gray-500 flex items-center gap-1"><FiTruck size={14} /> Distance</span><span className="font-semibold text-gray-800">{distance.toFixed(0)} km</span></div>
                       <div className="flex items-center justify-between text-sm"><span className="text-gray-500">Payment</span><span className="font-semibold text-gray-800 uppercase">{priceData.method || "COD"}</span></div>

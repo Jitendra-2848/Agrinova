@@ -229,29 +229,19 @@ export const useAuthStore = create((set, get) => ({
   startChatWithUser: async (userId) => {
     try {
       const res = await api.get(`/api/auth/user/${userId}`);
-
-
-      // ✅ FIX: Check both possible response structures
       const user = res.data.user || res.data;
-
       if (!user || !user._id) {
         console.error("Invalid user data received:", user);
         throw new Error("User not found");
       }
-
       set({ currentChatuser: user });
-
-      // Get messages for this user
       await get().getmsg(userId);
-
       return user;
     } catch (error) {
       console.error("startChatWithUser error:", error);
       throw error;
     }
   },
-
-  // Get products by farmer ID
   getProductsByFarmer: async (farmerId) => {
     try {
       const res = await api.get(`/api/product/farmer/${farmerId}`);
@@ -310,11 +300,6 @@ export const useAuthStore = create((set, get) => ({
   },
 
   clearNegotiatedDeal: () => set({ negotiated_deal: null }),
-
-  // -----------------------------
-  // PRODUCT METHODS
-  // -----------------------------
-
   AddProduct: async (data) => {
     const id = toast.loading("Adding...");
     try {
@@ -323,6 +308,7 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong...");
+      toast.error(error.response.data.message);
     } finally {
       toast.dismiss(id);
     }

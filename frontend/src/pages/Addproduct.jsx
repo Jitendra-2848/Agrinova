@@ -7,10 +7,10 @@ import toast from "react-hot-toast";
 const AddProduct = ({ isSubmitting = false }) => {
   const [product, setProduct] = useState({
     Product_name: "",
-    Product_price: "",
-    Product_Qty: "",
-    Product_location: "",
-    location_pin: "",
+    Product_price: "50",
+    Product_Qty: "22000",
+    Product_location: "Dukan 5,Damru bazzar,Ganesh chowk,narol court,narol,Ahmedabad",
+    location_pin: "382405",
     Product_description: "",
     Product_status: "In-Stock",
     Product_image: "",
@@ -161,7 +161,7 @@ const AddProduct = ({ isSubmitting = false }) => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Price (₹) *
+                    ₹ Price (per kg)
                   </label>
                   <input
                     type="number"
@@ -175,7 +175,7 @@ const AddProduct = ({ isSubmitting = false }) => {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Quantity *
+                    Quantity (in kg)
                   </label>
                   <input
                     type="number"

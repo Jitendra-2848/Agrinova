@@ -135,7 +135,7 @@ const Inventory = () => {
 
                     <span className="text-sm text-gray-600">
                       {product.Product_Qty}{" "}
-                      {product.Product_Qty === 1 ? "unit" : "units"}
+                      kg
                     </span>
                   </div>
 

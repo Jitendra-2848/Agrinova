@@ -115,7 +115,7 @@ const Product = () => {
                 {product.special_price ? (
                   <>
                     <span className="text-5xl font-bold text-emerald-600">
-                      ₹{product.special_price}
+                      ₹{product.special_price}/- kg
                     </span>
                     <span className="text-3xl text-gray-400 line-through">
                       ₹{product.Product_price}
@@ -126,7 +126,7 @@ const Product = () => {
                   </>
                 ) : (
                   <span className="text-5xl font-bold text-emerald-600">
-                    ₹{product.Product_price}
+                    ₹{product.Product_price}/- kg
                   </span>
                 )}
               </div>
@@ -141,7 +141,7 @@ const Product = () => {
             <div className="flex items-center gap-4 text-lg">
               <FiPackage className="text-emerald-600" />
               <span className="font-medium">
-                Available: <span className="font-bold text-emerald-600">{product.Product_Qty} units</span>
+                Available: <span className="font-bold text-emerald-600">{product.Product_Qty} kg</span>
               </span>
               {product.Product_Qty <= 10 && product.Product_Qty > 0 && (
                 <span className="ml-3 bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-bold">
