@@ -22,7 +22,6 @@ import {
 
 const SOCKET_URL = "http://localhost:5000";
 
-// Safe number helper
 const safeNumber = (val, fallback = 0) => {
   const num = Number(val);
   return isNaN(num) ? fallback : num;
