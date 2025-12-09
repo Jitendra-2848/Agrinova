@@ -65,7 +65,7 @@ io.on("connection", (socket) => {
 
   // Handle disconnect
   socket.on("disconnect", () => {
-    console.log("❌ User disconnected:", socket.id);
+    console.log("User disconnected:", socket.id);
   });
 });
 
@@ -73,7 +73,7 @@ io.on("connection", (socket) => {
 mongo
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected..."))
-  .catch((e) => console.error("❌ Mongo error:", e));
+  .catch((e) => console.error("Mongo error:", e));
 
 // Middleware
 app.use(express.json({ limit: "10mb" }));
@@ -81,18 +81,14 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "https://hoppscotch.io",
-      "http://localhost:3000",
-    ],
+    origin: `${process.env.FRONTEND_URL}`,
     credentials: true,
   })
 );
 
 // Health check
 app.get("/", (req, res) => {
-  res.send("🌾 AgriNova Backend Running");
+  res.send("AgriNova Backend Running");
 });
 
 // Routes
@@ -109,5 +105,5 @@ app.use("/api/user_detail", user_detail);
 // Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server + Socket.IO running on port ${PORT}`);
+  console.log(`Server + Socket.IO running on port ${PORT}`);
 });
