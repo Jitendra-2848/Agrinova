@@ -69,13 +69,10 @@ io.on("connection", (socket) => {
   });
 });
 
-// MongoDB connection
 mongo
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected..."))
   .catch((e) => console.error("Mongo error:", e));
-
-// Middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
