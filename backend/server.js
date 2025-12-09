@@ -5,7 +5,6 @@ const cors = require("cors");
 const mongo = require("mongoose");
 const cookieParser = require("cookie-parser");
 
-// Import routes
 const authRoutes = require("./routes/authroutes.js");
 const distanceRoutes = require("./routes/distanceroute.js");
 const cartRoutes = require("./routes/cartroute.js");
@@ -26,35 +25,26 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server, {
   cors: {
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:3000",
-      "https://hoppscotch.io"
-    ],
+    origin: ["https://agrinovafrontend.vercel.app"],
     credentials: true,
   },
 });
 
-// Make io accessible in routes
 app.set("io", io);
 
-// Socket.IO connection handling
 io.on("connection", (socket) => {
   console.log("🔥 User connected:", socket.id);
 
-  // Join chat room
   socket.on("join_room", (roomId) => {
     socket.join(roomId);
     console.log(`➡️ User ${socket.id} joined room: ${roomId}`);
   });
 
-  // Leave chat room
   socket.on("leave_room", (roomId) => {
     socket.leave(roomId);
     console.log(`⬅️ User ${socket.id} left room: ${roomId}`);
   });
 
-  // Typing indicator
   socket.on("typing", ({ roomId, userId }) => {
     socket.to(roomId).emit("typing", { userId });
   });
@@ -63,7 +53,6 @@ io.on("connection", (socket) => {
     socket.to(roomId).emit("stop_typing", { userId });
   });
 
-  // Handle disconnect
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });
@@ -73,22 +62,21 @@ mongo
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB connected..."))
   .catch((e) => console.error("Mongo error:", e));
+
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin: `${process.env.FRONTEND_URL}`, 
+    origin: ["https://agrinovafrontend.vercel.app"],
     credentials: true,
   })
 );
 
-// Health check
 app.get("/", (req, res) => {
   res.send("AgriNova Backend Running");
 });
 
-// Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/pincode", distanceRoutes);
 app.use("/api/cart", cartRoutes);
@@ -99,7 +87,6 @@ app.use("/api/track", trackRoutes);
 app.use("/api/transport", transportRoutes);
 app.use("/api/user_detail", user_detail);
 
-// Start server
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server + Socket.IO running on port ${PORT}`);
