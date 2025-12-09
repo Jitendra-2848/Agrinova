@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import People from "./People";
+import People from "./people";
 import { useAuthStore } from "../../lib/store";
 import { io } from "socket.io-client";
 import toast from "react-hot-toast";
